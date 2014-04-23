@@ -1,23 +1,23 @@
 package edu.stanford.nlp.pipeline;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import edu.stanford.nlp.util.Function;
-import edu.stanford.nlp.util.MutableInteger;
+import edu.stanford.nlp.util.Generics;
+import edu.stanford.nlp.util.MutableLong;
 import edu.stanford.nlp.util.StringUtils;
 import edu.stanford.nlp.util.Timing;
 import edu.stanford.nlp.util.logging.Redwood;
 
 /**
  * This class is designed to apply multiple Annotators to an Annotation. The idea is that you first build up the pipeline by adding Annotators, and
- * then you takes the objects you wish to annotate and pass them in and get in return a fully annotated object. Please see package level javadocs for
- * sample usage and a more complete description.
- * <p>
- * At the moment this mainly serves as an example of using the system and actually more complex annotation pipelines are in their own classes that
- * don't extend this one.
+ * then you take the objects you wish to annotate and pass them in and get back in return a fully annotated object. Please see the package level
+ * javadoc for sample usage and a more complete description.
  * 
  * @author Jenny Finkel
  */
@@ -26,16 +26,16 @@ public class SzTEAnnotationPipeline implements Annotator {
 
   protected static final boolean TIME = true;
 
-  private List<Annotator> annotators;
-  private List<MutableInteger> accumulatedTime;
+  private final List<Annotator> annotators;
+  private List<MutableLong> accumulatedTime;
 
   public SzTEAnnotationPipeline(List<Annotator> annotators) {
     this.annotators = annotators;
     if (TIME) {
       int num = annotators.size();
-      accumulatedTime = new ArrayList<>(annotators.size());
+      accumulatedTime = new ArrayList<MutableLong>(num);
       for (int i = 0; i < num; i++) {
-        accumulatedTime.add(new MutableInteger());
+        accumulatedTime.add(new MutableLong());
       }
     }
   }
@@ -47,34 +47,24 @@ public class SzTEAnnotationPipeline implements Annotator {
   public void addAnnotator(Annotator annotator) {
     annotators.add(annotator);
     if (TIME) {
-      accumulatedTime.add(new MutableInteger());
+      accumulatedTime.add(new MutableLong());
     }
   }
 
-  // EXTENSION
-  public void annotate(Annotation annotation, Set<String> subAnnotators, boolean ngramAnnotation) {
-    Iterator<MutableInteger> it = accumulatedTime.iterator();
+  public void annotate(Annotation annotation, Set<String> subAnnotators) {
+    Iterator<MutableLong> it = accumulatedTime.iterator();
     Timing t = new Timing();
-    // boolean oneSentence = false;
     for (Annotator annotator : annotators) {
       if (subAnnotators == null || subAnnotators.contains(annotator.getClass().getSimpleName().replace("Annotator", ""))) {
-        // if (ngramAnnotation && annotator instanceof WordsToSentencesAnnotator) {
-        // oneSentence = ((OwnWordsToSentencesAnnotator) annotator).getIsOneSentence();
-        // ((OwnWordsToSentencesAnnotator) annotator).setOneSentence(true);
-        // }
         if (TIME) {
           t.start();
         }
         annotator.annotate(annotation);
-        // System.out.println();
         if (TIME) {
           int elapsed = (int) t.stop();
-          MutableInteger m = it.next();
+          MutableLong m = it.next();
           m.incValue(elapsed);
         }
-        // if (ngramAnnotation && annotator instanceof WordsToSentencesAnnotator) {
-        // ((OwnWordsToSentencesAnnotator) annotator).setOneSentence(oneSentence);
-        // }
       }
     }
   }
@@ -88,7 +78,7 @@ public class SzTEAnnotationPipeline implements Annotator {
    *          The input annotation, usually a raw document
    */
   public void annotate(Annotation annotation) {
-    annotate(annotation, null, false);
+    annotate(annotation, null);
   }
 
   /**
@@ -102,19 +92,19 @@ public class SzTEAnnotationPipeline implements Annotator {
   }
 
   /**
-   * Annotate a collection of input annotations IN PARALLEL, making use of all available cores
+   * Annotate a collection of input annotations IN PARALLEL, making use of all available cores.
    * 
    * @param annotations
    *          The input annotations to process
    * @param callback
-   *          A function to be called when an annotation finishes. The return value of the callback is ignored
+   *          A function to be called when an annotation finishes. The return value of the callback is ignored.
    */
   public void annotate(final Iterable<Annotation> annotations, final Function<Annotation, Object> callback) {
     annotate(annotations, Runtime.getRuntime().availableProcessors(), callback);
   }
 
   /**
-   * Annotate a collection of input annotations IN PARALLEL, making use of threads given in numThreads
+   * Annotate a collection of input annotations IN PARALLEL, making use of threads given in numThreads.
    * 
    * @param annotations
    *          The input annotations to process
@@ -123,6 +113,7 @@ public class SzTEAnnotationPipeline implements Annotator {
    */
   public void annotate(final Iterable<Annotation> annotations, int numThreads) {
     annotate(annotations, numThreads, new Function<Annotation, Object>() {
+      @Override
       public Object apply(Annotation in) {
         return null;
       }
@@ -149,18 +140,24 @@ public class SzTEAnnotationPipeline implements Annotator {
     }
     // Java's equivalent to ".map{ lambda(annotation) => annotate(annotation) }
     Iterable<Runnable> threads = new Iterable<Runnable>() {
+      @Override
       public Iterator<Runnable> iterator() {
         final Iterator<Annotation> iter = annotations.iterator();
         return new Iterator<Runnable>() {
+          @Override
           public boolean hasNext() {
             return iter.hasNext();
           }
 
+          @Override
           public Runnable next() {
+            if (!iter.hasNext()) {
+              throw new NoSuchElementException();
+            }
             final Annotation input = iter.next();
             return new Runnable() {
+              @Override
               public void run() {
-                // Jesus Christ, finally the body of the code
                 // (logging)
                 String beginningOfDocument = input.toString().substring(0, Math.min(50, input.toString().length()));
                 Redwood.startTrack("Annotating \"" + beginningOfDocument + "...\"");
@@ -174,6 +171,7 @@ public class SzTEAnnotationPipeline implements Annotator {
             };
           }
 
+          @Override
           public void remove() {
             iter.remove();
           }
@@ -191,7 +189,7 @@ public class SzTEAnnotationPipeline implements Annotator {
    */
   protected long getTotalTime() {
     long total = 0;
-    for (MutableInteger m : accumulatedTime) {
+    for (MutableLong m : accumulatedTime) {
       total += m.longValue();
     }
     return total;
@@ -199,8 +197,7 @@ public class SzTEAnnotationPipeline implements Annotator {
 
   /**
    * Return a String that gives detailed human-readable information about how much time was spent by each annotator and by the entire annotation
-   * pipeline. This String includes newline characters but does not end with one, and so it is suitable to be printed out with a
-   * <code>println()</code>.
+   * pipeline. This String includes newline characters but does not end with one, and so it is suitable to be printed out with a {@code println()}.
    * 
    * @return Human readable information on time spent in processing.
    */
@@ -208,10 +205,10 @@ public class SzTEAnnotationPipeline implements Annotator {
     StringBuilder sb = new StringBuilder();
     if (TIME) {
       sb.append("Annotation pipeline timing information:\n");
-      Iterator<MutableInteger> it = accumulatedTime.iterator();
+      Iterator<MutableLong> it = accumulatedTime.iterator();
       long total = 0;
       for (Annotator annotator : annotators) {
-        MutableInteger m = it.next();
+        MutableLong m = it.next();
         sb.append(StringUtils.getShortClassName(annotator)).append(": ");
         sb.append(Timing.toSecondsString(m.longValue())).append(" sec.\n");
         total += m.longValue();
@@ -223,14 +220,19 @@ public class SzTEAnnotationPipeline implements Annotator {
 
   @Override
   public Set<Requirement> requirementsSatisfied() {
-    // TODO Auto-generated method stub
-    return null;
+    Set<Requirement> satisfied = Generics.newHashSet();
+    for (Annotator annotator : annotators) {
+      satisfied.addAll(annotator.requirementsSatisfied());
+    }
+    return satisfied;
   }
 
   @Override
   public Set<Requirement> requires() {
-    // TODO Auto-generated method stub
-    return null;
+    if (annotators.isEmpty()) {
+      return Collections.emptySet();
+    }
+    return annotators.get(0).requires();
   }
 
 }

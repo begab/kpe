@@ -2,11 +2,7 @@ package hu.u_szeged.kpe.readers;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 public class DocumentSet extends TreeSet<DocumentData> {
@@ -16,8 +12,6 @@ public class DocumentSet extends TreeSet<DocumentData> {
   private KpeReader reader;
   public static int adaptationType;
   private static boolean isGenuineDAon;
-
-  private Map<String, Set<Integer>> categoryToIdMapping = new HashMap<String, Set<Integer>>();
 
   public DocumentSet(KpeReader r) {
     this(-1, "", r);
@@ -93,21 +87,5 @@ public class DocumentSet extends TreeSet<DocumentData> {
         return docs.subList(fromIndex, toIndex);
       }
     }
-  }
-
-  public boolean add(DocumentData dd) {
-    boolean success = super.add(dd);
-    Collection<String> topics = dd.getTopicSet();
-    if (topics != null) {
-      for (String topic : dd.getTopicSet()) {
-        Set<Integer> previousIds = categoryToIdMapping.get(topic);
-        if (previousIds == null) {
-          previousIds = new HashSet<Integer>();
-        }
-        previousIds.add(dd.getDocId());
-        categoryToIdMapping.put(topic, previousIds);
-      }
-    }
-    return success;
   }
 }

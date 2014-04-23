@@ -1,7 +1,7 @@
-train=ContestReader->/home/berend/datasets/semeval5/train/
-test=ContestReader->/home/berend/datasets/semeval5/test/
+train=SemEvalReader->/home/berend/datasets/semeval5/train/
+test=SemEvalReader->/home/berend/datasets/semeval5/test/
 classifier=MaxEntL1
-featureEncoding=10 //262144 stands for using FirstOccurrence feature only, while 265231 is just a sensible choice over a set of features 
+featureEncoding=265231 // this model uses only the tf-idf scores 
 numOfKeyphrases=25
 wordnet_dir=false
 posEndPrune=true

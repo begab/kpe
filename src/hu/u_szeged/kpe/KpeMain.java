@@ -63,9 +63,8 @@ public class KpeMain {
     String escapedFeatureEncoding = mode.replaceAll("_", "");
     int c = 0;
     for (Iterator<String> it = featureClasses.iterator(); it.hasNext(); ++c) {
-      String feature = it.next();
+      String feature = it.next().split("\t")[1];
       if (escapedFeatureEncoding.charAt(c) == '1') {
-        System.err.println(feature);
         if (feature.equals("MweFeature")) {
           mweFeatureIsOn = true;
         } else if (feature.equals("StrangeOrthographyFeature")) {
@@ -136,8 +135,8 @@ public class KpeMain {
           String path = entry.getValue().get(i);
           ds.setBaseDir(path);
           if (serialize) {
-            System.err.println("Note that (due to the config parameters) files containing serializations of grammatic analysis will be saved to location "
-                + path + "grammar/.");
+            System.err.println("Note that (due to the config parameters) files containing serializations of grammatic analysis will be saved to location: "
+                + path + "grammar/");
           }
           reader.addDirectoryOfFiles(path, train, ds);
         }

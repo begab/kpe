@@ -485,7 +485,9 @@ public class KPEFilter implements Serializable {
     List<Map<Integer, List<CoreMap>>> grammars = new ArrayList<Map<Integer, List<CoreMap>>>(documents.length);
     List<Map<String, Map<NGram, NGramStats>>> listOfHashs = new ArrayList<Map<String, Map<NGram, NGramStats>>>(documents.length);
     for (DocumentData doc : documents) {
-      int maxSection = Integer.MAX_VALUE; // XXX this is just a dummy value here, as assumed
+      // XXX as assumed this is just a dummy value here, ensuring that we do not throw away anything with respect that constraining
+      // at some point it might turn out that some value having some real effect would better suit here
+      int maxSection = Integer.MAX_VALUE;
       Map<String, Map<NGram, NGramStats>> hash = new HashMap<String, Map<NGram, NGramStats>>();
       TreeMap<Integer, List<CoreMap>> sections = doc.getSections(r, serialize);
       lengths.add(getPhrases(hash, doc, maxSection, sections));
@@ -661,6 +663,8 @@ public class KPEFilter implements Serializable {
     return hash;
   }
 
+  private static final Pattern REFERENCE_PATTERN = Pattern.compile("(R(eferences?|EFERENCES?)|B(ibiliography|IBLIOGRAPHY))");
+
   /**
    * Fills in the HashMap with statistics of NGrams present in the document. Statistics stored in the Map: 0.) list of positions of the NGrams
    * (List<Integer>)<br>
@@ -676,7 +680,6 @@ public class KPEFilter implements Serializable {
    * @return total number of tokens and sections in the given document
    */
   public int[] getPhrases(Map<String, Map<NGram, NGramStats>> hash, DocumentData document, int maxSection, TreeMap<Integer, List<CoreMap>> sections) {
-    Pattern refPatt = Pattern.compile("R(eferences?|EFERENCES?)");
     Map<String, int[]> acronymsMap = new HashMap<String, int[]>();
     CoreLabel[] buffer = new CoreLabel[maxPhraseLength];
     int pos = 1, lastSectionNumber = sections.lastKey(), referencePosition = Integer.MAX_VALUE;
@@ -695,7 +698,7 @@ public class KPEFilter implements Serializable {
           // experiments TODO so remove it A.S.A.P.
           // if (word.get(OriginalTextAnnotation.class).equals("Recommended:"))
           // break review;
-          if (refPatt.matcher(word.word()).matches()) {
+          if (REFERENCE_PATTERN.matcher(word.word()).matches()) {
             referencePosition = pos;
           }
           String wordForm = word.word();
@@ -740,8 +743,9 @@ public class KPEFilter implements Serializable {
             if (info != null) {
               info.updatePositions(pos + 1 - i);
               info.addSentence(new int[] { sectionSentences.getKey(), sentenceNumber });
-              info.updateContainsReference((!document.hasUnwantedLastParagraph() || sectionSentences.getKey() != lastSectionNumber) && containsReference);
-            } else if (!document.hasUnwantedLastParagraph() || sectionSentences.getKey() != lastSectionNumber || lastSectionNumber == 0) {
+              info.updateContainsReference((!document.isScientific() || lastSectionNumber == 0 || sectionSentences.getKey() != lastSectionNumber)
+                  && containsReference);
+            } else if (!document.isScientific() || lastSectionNumber == 0 || sectionSentences.getKey() != lastSectionNumber) {
               info = new NGramStats(pos + 1 - i, new int[] { sectionSentences.getKey(), sentenceNumber }, containsReference);
               orthologicalForms.put(phraseBuffer, info);
               hash.put(phraseBuffer.getCanonicalForm(), orthologicalForms);

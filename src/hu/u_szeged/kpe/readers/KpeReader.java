@@ -10,8 +10,13 @@ import edu.stanford.nlp.pipeline.SzTECoreNLP;
 public abstract class KpeReader {
 
   public static SzTECoreNLP sentenceAnalyzer;
+
   protected Charset m_encoding;
   protected String fileType;
+  private boolean isMweOn;
+  private boolean isNeOn;
+  private boolean isSyntaxOn;
+
   protected boolean goldAnnotation;
 
   public abstract List<DocumentData> getContent(String dir, String file);
@@ -36,8 +41,24 @@ public abstract class KpeReader {
     fileType = extension;
   }
 
+  public boolean getIsMweOn() {
+    return isMweOn;
+  }
+
+  public boolean getIsNeOn() {
+    return isNeOn;
+  }
+
+  public boolean getIsSyntaxOn() {
+    return isSyntaxOn;
+  }
+
   public void initGrammar(boolean isMweFeatureOn, boolean isNeFeatureOn, boolean isSyntacticFeatureOn) {
+    isMweOn = isMweFeatureOn;
+    isNeOn = isNeFeatureOn;
+    isSyntaxOn = isSyntacticFeatureOn;
     if (sentenceAnalyzer == null) {
+
       String annotators = "tokenize, ssplit, pos, lemma, stopword, normalize";
       annotators += isMweFeatureOn ? ", mwe" : "";
       annotators += isNeFeatureOn ? ", ner" : "";

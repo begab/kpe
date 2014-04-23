@@ -89,10 +89,6 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
   // --> EXTENSION
 
-  enum OutputFormat {
-    TEXT, XML, SERIALIZED
-  }
-
   // other constants
   public static final String CUSTOM_ANNOTATOR_PREFIX = "customAnnotatorClass.";
   private static final String PROPS_SUFFIX = ".properties";

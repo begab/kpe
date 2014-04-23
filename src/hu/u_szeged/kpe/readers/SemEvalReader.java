@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class ContestReader extends ScientificReader {
+public class SemEvalReader extends ScientificReader {
 
   /** Files having the value of DEFAULT_EXTENSION as their suffices will be processed only. */
   private static final String DEFAULT_EXTENSION = ".txt.final";

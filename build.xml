@@ -58,10 +58,17 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="KpeMain">
+    <target description="a keyphrase extraction model is build based on the contents of the parameter file config.txt" name="KpeMain">
         <java classname="hu.u_szeged.kpe.KpeMain" failonerror="true" fork="yes">
             <jvmarg line="-Xmx3500m"/>
             <arg line="-paramFile config.txt"/>
+            <classpath refid="keyphraseExtractor.classpath"/>
+        </java>
+    </target>
+    <target description="a keyphrase extraction model is build based on the contents of the parameter file config.txt" name="KpeMainNoTraining">
+        <java classname="hu.u_szeged.kpe.KpeMain" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx3500m"/>
+            <arg line="-paramFile config_no_training.txt"/>
             <classpath refid="keyphraseExtractor.classpath"/>
         </java>
     </target>

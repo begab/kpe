@@ -1,20 +1,20 @@
-AcronymFeature
-FirstIndexFeature
-FirstSectionFeature
-HasReferenceFeature
-IndicatingVerbsFeature
-IsTaggedFeature
-KeyFreqFeature
-LengthFeature
-MweFeature
-PosFeature
-PresentInAbstractFeature
-PresentInReferencesFeature
-PresentInSectionHeaderFeature
-SectionFeature
-STDevFeature
-StopWordFeature
-StrangeOrthographyFeature
-SuffixFeature
-TfIdfFeature
-WikiFeature
+524288	AcronymFeature
+262144	FirstIndexFeature
+131072	FirstSectionFeature
+65536	HasReferenceFeature
+32768	IndicatingVerbsFeature
+16384	IsTaggedFeature
+8192	KeyFreqFeature
+4096	LengthFeature
+2048	MweFeature
+1024	PosFeature
+512	PresentInAbstractFeature
+256	PresentInReferencesFeature
+128	PresentInSectionHeaderFeature
+64	SectionFeature
+32	STDevFeature
+16	StopWordFeature
+8	StrangeOrthographyFeature
+4	SuffixFeature
+2	TfIdfFeature
+1	WikiFeature

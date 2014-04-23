@@ -1,6 +1,5 @@
 package hu.u_szeged.kpe.aspirants;
 
-import hu.u_szeged.kpe.readers.DocumentData;
 import hu.u_szeged.kpe.readers.KpeReader;
 import hu.u_szeged.utils.NLPUtils;
 import hu.u_szeged.utils.stemmer.PorterStemmer;
@@ -60,7 +59,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
 
   public NGram(String toAnnotate) {
     Annotation annotation = new Annotation(toAnnotate);
-    KpeReader.sentenceAnalyzer.annotate(annotation, DocumentData.ngramAnnotations, true);
+    KpeReader.sentenceAnalyzer.annotate(annotation);
     for (CoreLabel cl : annotation.get(TokensAnnotation.class)) {
       add(cl);
     }

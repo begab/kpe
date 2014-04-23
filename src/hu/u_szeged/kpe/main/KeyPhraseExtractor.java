@@ -96,12 +96,9 @@ public class KeyPhraseExtractor {
       int[] l = length.get(0);
       out.print("\t" + l[0] + "\t" + l[1]);
     }
-    Collection<String> topicSet = doc.getTopicSet();
-    if (topicSet != null)
-      out.print("\n" + doc.getTopicSet());
+
     for (ClassificationInstance ci : prunedPhrases) {
       out.print("\n" + ci);
-
     }
     out.flush();
   }

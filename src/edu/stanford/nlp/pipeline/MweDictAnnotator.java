@@ -150,12 +150,6 @@ public class MweDictAnnotator implements Annotator {
     }
   }
 
-  public static class MweEtalonAnnotation implements CoreAnnotation<String> {
-    public Class<String> getType() {
-      return String.class;
-    }
-  }
-
   @Override
   public Set<Requirement> requires() {
     return Collections.unmodifiableSet(new ArraySet<Requirement>());
