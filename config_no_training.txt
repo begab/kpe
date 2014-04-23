@@ -1,0 +1,21 @@
+// Note that this file differs from config.txt that training data is not specified here (which is indicated by writing null in the next line)
+train=ContestReader->null
+test=ContestReader->/home/berend/datasets/semeval5/test/
+classifier=MaxEntL1
+featureEncoding=265231 //262144 is FirstOccurrence
+pruning=false
+trainGoldAnn=true
+testGoldAnn=true
+foldNum=1
+numOfKeyphrases=25
+// put the location of the WordNet (WN) data directory in the next line, if you want WN to be used during keyphrase extraction
+wordnet_dir=/home/berend/WordNet3.0/dict/  
+posEndPrune=true
+stopWordPrune=true
+trainingSynonyms=false
+testSynonyms=false
+beisMarkup=true,false,true
+ownCoreNLP=tokenize, ssplit, pos, lemma, stopword, normalize, mwe, ner//, parse 
+serializeAnnotations=false
+domainAdaptation=-1
+featureSelection=1.0
