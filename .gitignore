@@ -6,6 +6,7 @@
 /models/
 
 *~
+*.tmp
 *.log
 *.out
 .classpath

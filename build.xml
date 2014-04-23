@@ -60,6 +60,8 @@
     </target>
     <target name="KpeMain">
         <java classname="hu.u_szeged.kpe.KpeMain" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx3500m"/>
+            <arg line="-paramFile config.txt"/>
             <classpath refid="keyphraseExtractor.classpath"/>
         </java>
     </target>
