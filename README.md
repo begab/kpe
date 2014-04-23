@@ -14,11 +14,15 @@ Having done this, all the necessary libs can be found in the directory *lib/*.
 2. You are now ready to compile and run the project in your favorite IDE or by using *ant* for that purpose. In the case *ant* is available on your computer, compiling and running the project can be obtained via executing the following two commands:
 
 `ant`
+
 `ant KpeMain`
 
 The behavior of the main class is defined by the contents of the *config.txt* file which is described next.
 
 The structure of the config file
-===
+---
 
 
+
+Writing custom readers
+---
