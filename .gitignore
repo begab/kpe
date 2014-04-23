@@ -13,4 +13,4 @@
 .classpath
 .project
 
-!/models/SemEvalReader/00000000010000001110_BIES_pos_BIES_suffix_true.model
+!./models/SemEvalReader/00000000010000001110_BIES_pos_BIES_suffix_true.model
