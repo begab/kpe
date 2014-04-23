@@ -1,6 +1,6 @@
 package hu.u_szeged.kpe.main;
 
-import hu.u_szeged.kpe.aspirants.NGram;
+import hu.u_szeged.kpe.candidates.NGram;
 import hu.u_szeged.kpe.readers.DocumentData;
 import hu.u_szeged.kpe.readers.DocumentSet;
 import hu.u_szeged.utils.ClassificationInstance;

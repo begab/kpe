@@ -1,6 +1,6 @@
 package hu.u_szeged.kpe;
 
-import hu.u_szeged.kpe.aspirants.NGram;
+import hu.u_szeged.kpe.candidates.NGram;
 import hu.u_szeged.kpe.main.ExtractionModelBuilder;
 import hu.u_szeged.kpe.main.KPEFilter;
 import hu.u_szeged.kpe.main.KeyPhraseExtractor;
@@ -73,7 +73,7 @@ public class KpeMain {
         selectedFeatures.add(feature);
       }
     }
-    System.err.println("Features on:\n" + selectedFeatures);
+    System.err.println("Features used:\t" + selectedFeatures);
   }
 
   public boolean getNoStopWordPruning() {

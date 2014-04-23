@@ -1,8 +1,8 @@
 package hu.u_szeged.utils;
 
-import hu.u_szeged.kpe.aspirants.NGram;
-import hu.u_szeged.kpe.aspirants.NGram.SequenceType;
-import hu.u_szeged.kpe.aspirants.NGramStats;
+import hu.u_szeged.kpe.candidates.NGram;
+import hu.u_szeged.kpe.candidates.NGramStats;
+import hu.u_szeged.kpe.candidates.NGram.SequenceType;
 
 import java.util.HashMap;
 import java.util.Map;

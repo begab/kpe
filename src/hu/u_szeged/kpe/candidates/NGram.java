@@ -1,4 +1,4 @@
-package hu.u_szeged.kpe.aspirants;
+package hu.u_szeged.kpe.candidates;
 
 import hu.u_szeged.kpe.readers.KpeReader;
 import hu.u_szeged.utils.NLPUtils;

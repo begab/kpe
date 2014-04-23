@@ -11,14 +11,25 @@ public abstract class KpeReader {
 
   public static SzTECoreNLP sentenceAnalyzer;
 
-  protected Charset m_encoding;
+  /** On default (unless overridden by a descendant class) we shall only treat files having this kind of extension */
+  protected static final String DEFAULT_EXTENSION = ".txt";
   protected String fileType;
+  protected Charset m_encoding;
   private boolean isMweOn;
   private boolean isNeOn;
   private boolean isSyntaxOn;
 
   protected boolean goldAnnotation;
 
+  /**
+   * This method returns a {@link}List of DocumentData class representations of documents being present at location dir+"/"+file <br>
+   * It returns a list of {@link} DocumentData objects as one document might contain more than just one document (e.g in the form of an XML). <br>
+   * Most often however, this List is going to be just of size 1.
+   * 
+   * @param dir
+   * @param file
+   * @return
+   */
   public abstract List<DocumentData> getContent(String dir, String file);
 
   public abstract String getText(String file, int numberWithinFile);

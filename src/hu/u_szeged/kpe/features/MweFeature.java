@@ -1,7 +1,7 @@
 package hu.u_szeged.kpe.features;
 
-import hu.u_szeged.kpe.aspirants.NGram;
-import hu.u_szeged.kpe.aspirants.NGramStats;
+import hu.u_szeged.kpe.candidates.NGram;
+import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.readers.DocumentData;
 
 import java.util.AbstractMap.SimpleEntry;

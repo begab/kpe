@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 public class ScientificReader extends KpeReader {
 
-  protected static final String DEFAULT_EXTENSION = ".txt";
   // really ugly pattern for detecting numeric expressions
   protected static final Pattern NUM_PATTERN = Pattern.compile("(([-+±]|(\\+/-))?\\d+([.,]\\d+)?%?)+");
 

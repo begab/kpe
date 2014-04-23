@@ -1,6 +1,6 @@
 package hu.u_szeged.kpe.readers;
 
-import hu.u_szeged.kpe.aspirants.NGram;
+import hu.u_szeged.kpe.candidates.NGram;
 import hu.u_szeged.utils.NLPUtils;
 
 import java.io.BufferedInputStream;

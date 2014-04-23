@@ -1,8 +1,8 @@
 package hu.u_szeged.kpe.features;
 
-import hu.u_szeged.kpe.aspirants.NGram;
-import hu.u_szeged.kpe.aspirants.NGram.SequenceType;
-import hu.u_szeged.kpe.aspirants.NGramStats;
+import hu.u_szeged.kpe.candidates.NGram;
+import hu.u_szeged.kpe.candidates.NGramStats;
+import hu.u_szeged.kpe.candidates.NGram.SequenceType;
 import hu.u_szeged.kpe.main.KPEFilter;
 import hu.u_szeged.kpe.readers.DocumentData;
 import hu.u_szeged.utils.NLPUtils;

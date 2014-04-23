@@ -18,16 +18,13 @@ public class SemEvalReader extends ScientificReader {
   private static final String DEFAULT_EXTENSION = ".txt.final";
   private Map<String, String> readerKeyphrases = null;
   private Map<String, String> authorKeyphrases = null;
-  /** This set keeps track of the directories, the keyphrases of which were tried to be read into memory */
-  private Set<String> registeredDirs;
 
   protected void setDetails() {
     fileType = DEFAULT_EXTENSION;
-    registeredDirs = new HashSet<>();
   }
 
   public List<DocumentData> getContent(String dir, String file) {
-    if (registeredDirs.add(dir)) {
+    if (readerKeyphrases == null) {
       readerKeyphrases = etalonKeyphrases("reader", dir);
       authorKeyphrases = etalonKeyphrases("author", dir);
       if (goldAnnotation) {

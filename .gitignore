@@ -4,6 +4,7 @@
 /lib/google-gson-2.2.4/
 /lib/stanford-corenlp-full-2014-01-04/
 /models/
+/.settings/
 
 *~
 *.tmp
@@ -11,3 +12,5 @@
 *.out
 .classpath
 .project
+
+!/models/SemEvalReader/00000000010000001110_BIES_pos_BIES_suffix_true.model

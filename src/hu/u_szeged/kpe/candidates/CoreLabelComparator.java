@@ -1,4 +1,4 @@
-package hu.u_szeged.kpe.aspirants;
+package hu.u_szeged.kpe.candidates;
 
 import java.io.Serializable;
 import java.util.Comparator;

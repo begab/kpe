@@ -1,4 +1,4 @@
-package hu.u_szeged.kpe.aspirants;
+package hu.u_szeged.kpe.candidates;
 
 import java.util.LinkedList;
 import java.util.List;

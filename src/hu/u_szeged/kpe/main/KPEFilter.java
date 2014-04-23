@@ -1,8 +1,8 @@
 package hu.u_szeged.kpe.main;
 
-import hu.u_szeged.kpe.aspirants.CoreLabelComparator;
-import hu.u_szeged.kpe.aspirants.NGram;
-import hu.u_szeged.kpe.aspirants.NGramStats;
+import hu.u_szeged.kpe.candidates.CoreLabelComparator;
+import hu.u_szeged.kpe.candidates.NGram;
+import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.features.Feature;
 import hu.u_szeged.kpe.features.FeatureHolder;
 import hu.u_szeged.kpe.readers.DocumentData;

@@ -1,7 +1,8 @@
+//Note that this file only differs from the contents of config.txt in its first (non-comment) line. Here, null being present before '->' indicates that we do not want to perform training (i.e. we believe that the model file that would have been generated if we train a new model based on the rest of the contents of the config file can already be found on our computer).
 train=null->/home/berend/datasets/semeval5/train/
 test=SemEvalReader->/home/berend/datasets/semeval5/test/
 classifier=MaxEntL1
-featureEncoding=10 // this model uses only the tf-idf scores 
+featureEncoding=1038
 numOfKeyphrases=25
 wordnet_dir=false
 posEndPrune=true
