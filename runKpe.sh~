@@ -1,3 +1,0 @@
-#!/bin/bash
-
-java -cp "bin:lib/*" com.rest.RESTMain > log.txt 2>&1 &

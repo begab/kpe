@@ -4,7 +4,8 @@
 /lib/google-gson-2.2.4/
 /lib/stanford-corenlp-full-2014-01-04/
 /models/
-target/
+
+*~
 *.log
 *.out
 .classpath
