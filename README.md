@@ -24,4 +24,4 @@ The former file is decorated with comments (text following `//`), which are inte
 See comments included in *config.txt*.
 
 ####Writing custom readers
-This code was primarily written for dealing with the SemEval shared task dataset. However, arbitrary readers can be added to the project by implementing the `hu.u_szeged.kpe.readers.KpeReader` interface in a similar manner as `hu.u_szeged.kpe.readers.SemEvalReader` does it so.
+This code was primarily written for dealing with the SemEval shared task dataset. However, arbitrary readers can be added to the project by implementing the `hu.u_szeged.kpe.readers.KpeReader` interface in a similar manner as `hu.u_szeged.kpe.readers.SemEvalReader` or `hu.u_szeged.kpe.readers.GeneralReader` does it so.
