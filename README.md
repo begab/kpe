@@ -30,5 +30,5 @@ Feature encoding *265231* (being a reliable choice over various domains due to o
 This code was primarily written for dealing with the SemEval shared task dataset. However, arbitrary readers can be added to the project by implementing the `hu.u_szeged.kpe.readers.KpeReader` interface in a similar manner as `hu.u_szeged.kpe.readers.SemEvalReader` or `hu.u_szeged.kpe.readers.GeneralReader` does it so.
 
 ###Related publications
-Gábor Berend: Opinion Expression Mining by Exploiting Keyphrase Extraction. Fifth International Joint Conference on Natural Language Processing. [PDF]
-Gábor Berend; Richárd Farkas: Feature Engineering for Keyphrase Extraction, accepted to SemEval-2 workshop, Evaluation Exercises on Semantic Evaluation - ACL SigLex event 2010. [PDF]
+Gábor Berend: Opinion Expression Mining by Exploiting Keyphrase Extraction. Fifth International Joint Conference on Natural Language Processing. [PDF](http://www.aclweb.org/anthology-new/I/I11/I11-1130.pdf)  
+Gábor Berend; Richárd Farkas: Feature Engineering for Keyphrase Extraction, accepted to SemEval-2 workshop, Evaluation Exercises on Semantic Evaluation - ACL SigLex event 2010. [PDF] (http://www.aclweb.org/anthology/S/S10/S10-1040.pdf)
