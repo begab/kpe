@@ -5,7 +5,8 @@ This project is the successor of the keyphrase extractor system SZTERGAK, which 
 
 #####How to make the code running:
 
-**The fast lane**: enter the subsequent commands in the project directory (assuming a UNIX-like environment and the accessability of *zip* and *ant* commands):  
+**The fast lane**  
+Enter the subsequent commands in the project directory (assuming a UNIX-like environment and the accessability of *zip* and *ant* commands):  
 1. `./getLibs.sh`  
 2. `ant`  
 3. `ant KpeMainNoTraining`  
