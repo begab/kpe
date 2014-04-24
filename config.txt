@@ -7,4 +7,4 @@ wordnet_dir=false // in the case you wish WordNet (WN) to be used during keyphra
 posEndPrune=true // experimental feature for ruling out certain keyphrase candidates based on POS tag-based rules
 stopWordPrune=true // experimental feature for ruling out certain keyphrase candidates based on stopwords
 beisMarkup=true,false,true // these values mark for which sequential features (out of POS, named entities and char suffixes-related ones) to use the B/E/I/S (i.e. B=begining, E=ending, I=inside, S=singleton) prefixes involving token positional information in the features
-serializeAnnotations=true // indicates if grammatical analysis should be backed up for subsequential runs
+serializeAnnotations=false // indicates if grammatical analysis should be backed up for subsequent runs

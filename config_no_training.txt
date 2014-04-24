@@ -1,6 +1,8 @@
-//Note that this file only differs from the contents of config.txt in its first (non-comment) line. Here, null being present before '->' indicates that we do not want to perform training (i.e. we believe that the model file that would have been generated if we train a new model based on the rest of the contents of the config file can already be found on our computer).
+// Note that this file only differs from the contents of config.txt in its first two (non-comment) lines, i.e. in the specification of training and testing data.
+// Here, null being present before '->' indicates that we do not want to perform training
+// (i.e. we believe that the model file that would have been generated if we train a new model based on the rest of the contents of the config file is already available).
 train=null->/home/berend/datasets/semeval5/train/
-test=SemEvalReader->/home/berend/datasets/semeval5/test/
+test=GeneralReader->example_data
 classifier=MaxEntL1
 featureEncoding=1038
 numOfKeyphrases=25
@@ -8,4 +10,4 @@ wordnet_dir=false
 posEndPrune=true
 stopWordPrune=true
 beisMarkup=true,false,true
-serializeAnnotations=true
+serializeAnnotations=false

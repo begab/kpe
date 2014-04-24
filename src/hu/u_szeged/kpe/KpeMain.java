@@ -192,7 +192,7 @@ public class KpeMain {
         System.err.println("The desired model (" + modelName + ") cannot be found on the computer, the config needs to be modified in order to generate it.");
         System.exit(1);
       }
-      System.err.println("Extration of keyphrases begins. Outputs will be located in at ./models/" + loc[0] + "/ directory.");
+      System.err.println("Extration of keyphrases begins. Output will be located at ./models/" + loc[0] + "/ directory.");
       ke.loadModel(modelName);
       ke.extractKeyphrases(actualFold, totalFolds, modelName.replace(".model", "_" + goldAnn[1] + ".out"), serialize);
     } catch (Exception e) {
@@ -231,8 +231,10 @@ public class KpeMain {
   public static void main(String[] args) {
     String modelPrefix = null;
     if (args[0].equalsIgnoreCase("-paramFile")) {
-      if (args.length > 2)
+      if (args.length > 2) {
         modelPrefix = args[2];
+      }
+      System.err.println("Configuration read from config file: " + args[1]);
       args = processParamFile(args[1]);
     }
     String[] params = { "Reader class and location(s) for training:", "Reader class and location(s) for testing:", "Classifier to use:",

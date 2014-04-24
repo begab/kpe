@@ -258,7 +258,7 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
         }
         documentSections.add(new Annotation(section));
       }
-
+      analyzeSections(documentSections, grammarFile, serialize);
     } catch (Exception e) {
       System.err.println("Error occured during the annotation of file " + file + " of line " + lineNumInFile);
       e.printStackTrace();

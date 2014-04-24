@@ -30,7 +30,7 @@ public class GeneralReader extends KpeReader {
       readEtalonKeyphrases(dir + "/etalon.keys");
     }
     List<DocumentData> toReturn = new ArrayList<DocumentData>(1);
-    toReturn.add(new DocumentData(etalonKeyphrases.get(new File(file).getName()), file, this.getClass()));
+    toReturn.add(new DocumentData(etalonKeyphrases.get(new File(file).getName().replace(fileType, "")), file, this.getClass()));
     return toReturn;
   }
 

@@ -1,16 +1,18 @@
 # Directories #
-/build/
-/bin/
-/lib/google-gson-2.2.4/
-/lib/stanford-corenlp-full-2014-01-04/
-/models/
-/.settings/
+build/
+bin/
+lib/google-gson-2.2.4/
+lib/stanford-corenlp-full-2014-01-04/
+.settings/
+models/*
+!models/GeneralReader
+models/GeneralReader/*
+!models/GeneralReader/00000000010000001110_BIES_pos_BIES_suffix_true.model
 
 *~
 *.tmp
 *.log
 *.out
+*.gr
 .classpath
 .project
-
-!./models/SemEvalReader/00000000010000001110_BIES_pos_BIES_suffix_true.model
