@@ -3,7 +3,7 @@ kpe
 
 This project is the successor of the keyphrase extractor system SZTERGAK, which participated at the [SemEval shared task on keyphrase extraction](http://semeval2.fbk.eu/semeval2.php?location=tasks&taskid=6) (from scientific publications).
 
-#####How to make the code running:
+###How to make the code running
 
 **The fast lane**  
 Enter the subsequent commands in the project directory (assuming a UNIX-like environment and the accessability of *zip* and *ant* commands):  
@@ -20,8 +20,8 @@ Having done this, all the necessary libs can be found in the directory *lib/*.
 Details of the behavior of the main class is influenced by the contents of the *config.txt* and the *config_no_training.txt* files.
 The former file is decorated with comments (text following `//`), which are intended to explain the various parameters that can be set within the config files.
 
-###The structure of the config file
+####The structure of the config file
 See comments included in *config.txt*.
 
-###Writing custom readers
+####Writing custom readers
 This code was primarily written for dealing with the SemEval shared task dataset. However, arbitrary readers can be added to the project by implementing the `hu.u_szeged.kpe.readers.KpeReader` interface in a similar manner as `hu.u_szeged.kpe.readers.SemEvalReader` does it so.
