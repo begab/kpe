@@ -22,9 +22,13 @@ The former file is decorated with comments (text following `//`), which are inte
 
 ####The structure of the config file
 Comments at the end of every line of file *config.txt* are intended to explain the structure of config files.  
-The only part not being detailed there, is how to encode feature combinations into integers, i.e. the format in which the config file processes them.  
+The only part not being detailed there, is how to encode feature combinations into integers, i.e. the format in which the framework expects them.  
 In order to encode a feature combination into an integer, open the plain text file *resources/features*, select the rows which contain the names of the desired features and simply add the integers up next to them to get the integer describing the selected set of features.  
 Feature encoding *265231* (being a reliable choice over various domains due to our experiences) for instance includes features referred as *WikiFeature, TfIdfFeature, SuffixFeature, StrangeOrthographyFeature, PosFeature, MweFeature, FirstIndexFeature* in the *resources/features* file.
 
 ####Writing custom readers
 This code was primarily written for dealing with the SemEval shared task dataset. However, arbitrary readers can be added to the project by implementing the `hu.u_szeged.kpe.readers.KpeReader` interface in a similar manner as `hu.u_szeged.kpe.readers.SemEvalReader` or `hu.u_szeged.kpe.readers.GeneralReader` does it so.
+
+###Related publications
+Gábor Berend: Opinion Expression Mining by Exploiting Keyphrase Extraction. Fifth International Joint Conference on Natural Language Processing. [PDF]
+Gábor Berend; Richárd Farkas: Feature Engineering for Keyphrase Extraction, accepted to SemEval-2 workshop, Evaluation Exercises on Semantic Evaluation - ACL SigLex event 2010. [PDF]
