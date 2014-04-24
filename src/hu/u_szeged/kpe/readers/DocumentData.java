@@ -221,7 +221,7 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
     int numberInDoc = getLineNumInFile();
     File f = new File(file);
     String grammarFile = f.getParent() + "/grammar/" + (numberInDoc > 0 ? numberInDoc : "") + f.getName() + ".gr";
-    if (serialize && new File(grammarFile).exists()) {
+    if (new File(grammarFile).exists()) {
       try {
         ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(grammarFile)));
         List<Annotation> documentSections = (List<Annotation>) in.readObject();

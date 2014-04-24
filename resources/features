@@ -1,9 +1,8 @@
-524288	AcronymFeature
-262144	FirstIndexFeature
-131072	FirstSectionFeature
-65536	HasReferenceFeature
-32768	IndicatingVerbsFeature
-16384	IsTaggedFeature
+262144	AcronymFeature
+131072	FirstIndexFeature
+65536	FirstSectionFeature
+32768	HasReferenceFeature
+16384	IndicatingVerbsFeature
 8192	KeyFreqFeature
 4096	LengthFeature
 2048	MweFeature

@@ -7,10 +7,16 @@ lib/stanford-corenlp-full-2014-01-04/
 models/*
 !models/GeneralReader
 models/GeneralReader/*
-!models/GeneralReader/00000000010000001110_BIES_pos_BIES_suffix_true.model
+!models/GeneralReader/0000000010000001110_BIES_pos_BIES_suffix_true.model
 
 *~
 *.tmp
+
+*.txt
+!config_no_training.txt
+!config.txt
+!example_data/
+
 *.log
 *.out
 *.gr

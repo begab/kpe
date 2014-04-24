@@ -138,7 +138,7 @@ public class MalletDataHandler extends DataHandler implements Serializable {
       Set<String> defaultFeatures = new HashSet<String>(Arrays.asList(new String[] { new Boolean(true).toString(), new Boolean(false).toString() }));
       if (classLabels == null) {
         classLabels = defaultFeatures;
-        System.err.println("A binary classifier is to be built.");
+        System.err.println("A binary classifier is being built now (which might take some time).");
       }
       for (String label : classLabels) {
         labelAlphabet.lookupIndex(label);
