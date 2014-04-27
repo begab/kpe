@@ -225,7 +225,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     return normalization;
   }
 
-  public void setNormalizedForm() {
+  private void setNormalizedForm() {
     List<String> normalizedTokens = new LinkedList<String>();
     for (CoreLabel cl : this) {
       String normalized = getNormalizedCoreLabel(cl);
@@ -241,7 +241,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     normalizedForm = sb.toString().trim();
   }
 
-  public String[] getSequence(SequenceType type) {
+  private String[] getSequence(SequenceType type) {
     String[] sb = new String[size()];
     for (int o = 0; o < size(); ++o) {
       CoreLabel ew = get(o);
