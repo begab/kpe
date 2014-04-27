@@ -152,7 +152,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     return false;
   }
 
-  private static String getTransformedForm(CoreLabel cl) {
+  private String getTransformedForm(CoreLabel cl) {
     String pos = cl.getString(PartOfSpeechAnnotation.class).toLowerCase();
     Set<SynsetType> synsetTypes = new HashSet<SynsetType>(Arrays.asList(SynsetType.ALL_TYPES));
     if (pos.startsWith("nn")) {
@@ -209,7 +209,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
    * @return - the normalized representation of the CoreLabel parameter (or null if the word is known to be a stopword)
    */
 
-  public static String getNormalizedCoreLabel(CoreLabel cl) {
+  private String getNormalizedCoreLabel(CoreLabel cl) {
     boolean isStopWord = cl.has(StopWordAnnotation.class) && cl.get(StopWordAnnotation.class);
     String normalization = ps.stem(cl.lemma().toLowerCase());
 

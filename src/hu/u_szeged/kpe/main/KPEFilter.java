@@ -15,17 +15,12 @@ import hu.u_szeged.ml.mallet.MalletDataHandler;
 import hu.u_szeged.utils.ClassificationInstance;
 import hu.u_szeged.utils.NLPUtils;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,7 +30,6 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import cc.mallet.types.Alphabet;
-import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -269,76 +263,76 @@ public class KPEFilter implements Serializable {
       f.setFeatureField(this);
   }
 
-  private String trasformSWNtoStanfordPOS(String swnPOS) {
-    if (swnPOS.equalsIgnoreCase("a")) {
-      return "JJ";
-    } else if (swnPOS.equalsIgnoreCase("n")) {
-      return "NN";
-    } else if (swnPOS.equalsIgnoreCase("v")) {
-      return "VB";
-    } else {
-      return "RB";
-    }
-  }
+  // private String trasformSWNtoStanfordPOS(String swnPOS) {
+  // if (swnPOS.equalsIgnoreCase("a")) {
+  // return "JJ";
+  // } else if (swnPOS.equalsIgnoreCase("n")) {
+  // return "NN";
+  // } else if (swnPOS.equalsIgnoreCase("v")) {
+  // return "VB";
+  // } else {
+  // return "RB";
+  // }
+  // }
 
-  @SuppressWarnings("unchecked")
-  public void fillWordList(String file) {
-    if (wordList == null && new File(file + ".ser").exists()) {
-      try {
-        wordList = (Map<CoreLabel, List<double[]>>) new ObjectInputStream(new BufferedInputStream(new FileInputStream(file + ".ser"))).readObject();
-      } catch (Exception e) {
-        System.err.println("Error in deserializing file " + file + ".ser");
-        e.printStackTrace();
-        System.exit(1);
-      }
-    } else if (wordList == null) {
-      doTheRest(file);
-    }
+  // @SuppressWarnings("unchecked")
+  // public void fillWordList(String file) {
+  // if (wordList == null && new File(file + ".ser").exists()) {
+  // try {
+  // wordList = (Map<CoreLabel, List<double[]>>) new ObjectInputStream(new BufferedInputStream(new FileInputStream(file + ".ser"))).readObject();
+  // } catch (Exception e) {
+  // System.err.println("Error in deserializing file " + file + ".ser");
+  // e.printStackTrace();
+  // System.exit(1);
+  // }
+  // } else if (wordList == null) {
+  // doTheRest(file);
+  // }
+  //
+  // // try {
+  // // if (acceptSynonyms && new File(file + "Synsets.ser").exists()) {
+  // // synsets = (Map<CoreLabel, Set<String>>) new ObjectInputStream(new BufferedInputStream(new
+  // // FileInputStream(file + "Synsets.ser")))
+  // // .readObject();
+  // // }
+  // // } catch (Exception e) {
+  // // System.err.println("Error in reading deserializing file " + file + "Synsets.ser");
+  // // System.exit(1);
+  // // }
+  // }
 
-    // try {
-    // if (acceptSynonyms && new File(file + "Synsets.ser").exists()) {
-    // synsets = (Map<CoreLabel, Set<String>>) new ObjectInputStream(new BufferedInputStream(new
-    // FileInputStream(file + "Synsets.ser")))
-    // .readObject();
-    // }
-    // } catch (Exception e) {
-    // System.err.println("Error in reading deserializing file " + file + "Synsets.ser");
-    // System.exit(1);
-    // }
-  }
-
-  private void doTheRest(String file) {
-    wordList = new TreeMap<CoreLabel, List<double[]>>(new CoreLabelComparator());
-    // synsets = new TreeMap<CoreLabel, Set<String>>(new CoreLabelComparator());
-    List<String> lines = new LinkedList<>();
-    NLPUtils.readDocToCollection(file, lines);
-    for (String line : lines) {
-      String[] parts = line.split("\t");
-      double posValue = Double.parseDouble(parts[2]), negValue = Double.parseDouble(parts[3]);
-      if ((posValue + negValue) == 0.0)
-        continue;
-      String[] tokens = parts[4].split(" ");
-      Set<String> tokensSet = new HashSet<String>();
-      Set<CoreLabel> coreLabelSet = new HashSet<CoreLabel>();
-      for (String token : tokens) {
-        token = token.replaceAll("(#[a-z])?#\\d+", ""); // "(#[a-z])?" is for the different versions of SWN
-        String[] tokenParts = token.split("_");
-        if (tokenParts.length > 1)
-          continue;
-        String pos = trasformSWNtoStanfordPOS(parts[0]);
-        CoreLabel key = new CoreLabel();
-        key.set(LemmaAnnotation.class, tokenParts[0]);
-        key.setTag(pos);
-        String normalized = NGram.getNormalizedCoreLabel(key);
-        tokensSet.add(normalized);
-        coreLabelSet.add(key);
-        if (!wordList.containsKey(key))
-          wordList.put(key, new LinkedList<double[]>());
-        wordList.get(key).add(new double[] { posValue, negValue });
-      }
-    }
-    NLPUtils.serialize(wordList, file + ".ser");
-  }
+  // private void doTheRest(String file) {
+  // wordList = new TreeMap<CoreLabel, List<double[]>>(new CoreLabelComparator());
+  // // synsets = new TreeMap<CoreLabel, Set<String>>(new CoreLabelComparator());
+  // List<String> lines = new LinkedList<>();
+  // NLPUtils.readDocToCollection(file, lines);
+  // for (String line : lines) {
+  // String[] parts = line.split("\t");
+  // double posValue = Double.parseDouble(parts[2]), negValue = Double.parseDouble(parts[3]);
+  // if ((posValue + negValue) == 0.0)
+  // continue;
+  // String[] tokens = parts[4].split(" ");
+  // Set<String> tokensSet = new HashSet<String>();
+  // Set<CoreLabel> coreLabelSet = new HashSet<CoreLabel>();
+  // for (String token : tokens) {
+  // token = token.replaceAll("(#[a-z])?#\\d+", ""); // "(#[a-z])?" is for the different versions of SWN
+  // String[] tokenParts = token.split("_");
+  // if (tokenParts.length > 1)
+  // continue;
+  // String pos = trasformSWNtoStanfordPOS(parts[0]);
+  // CoreLabel key = new CoreLabel();
+  // key.set(LemmaAnnotation.class, tokenParts[0]);
+  // key.setTag(pos);
+  // String normalized = NGram.getNormalizedCoreLabel(key);
+  // tokensSet.add(normalized);
+  // coreLabelSet.add(key);
+  // if (!wordList.containsKey(key))
+  // wordList.put(key, new LinkedList<double[]>());
+  // wordList.get(key).add(new double[] { posValue, negValue });
+  // }
+  // }
+  // NLPUtils.serialize(wordList, file + ".ser");
+  // }
 
   /**
    * Updates the global dictionaries with some statistics.
