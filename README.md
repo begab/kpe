@@ -12,7 +12,7 @@ Enter the subsequent commands in the project directory (assuming a UNIX-like env
 3. `ant KpeMainNoTraining`  
 
 **The (not so) fast lane**  
-1. Running the script `getLibs` downloads dependant libs necessary for building the project. Note that this script assumes a UNIX-like envorinment (and the accessability of the zip command). This step takes a some minutes depending on your Internet connection (as it downloads 210Mb of data approximately). Open a terminal and in the project directory type:   
+1. Running the script `getLibs` downloads dependant libs necessary for building the project. Note that this script assumes a UNIX-like envorinment (and the accessability of the *zip* command). This step takes some time depending on your Internet connection (as it downloads 210Mb of data approximately). Open a terminal and in the project directory type:   
 `./getLibs.sh`   
 Having done this, all the necessary libs can be found in the directory *lib/*.  
 2. You are now ready to compile the project in your favorite IDE or by using *ant* for that purpose. In case *ant* is available on your machine, compilation can be performed by executing `ant` in the project directory.   

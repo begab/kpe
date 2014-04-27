@@ -1,8 +1,8 @@
 package hu.u_szeged.utils;
 
 import hu.u_szeged.kpe.candidates.NGram;
-import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.candidates.NGram.SequenceType;
+import hu.u_szeged.kpe.candidates.NGramStats;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,8 +47,9 @@ public class ClassificationInstance {
     firstOcc = dedicatedFeatures[1];
     label = new Boolean(dedicatedFeatures[2] == 1.0d);
     orthographicForms = new HashMap<NGram, Integer>();
-    for (Entry<NGram, NGramStats> form : ngramForms.entrySet())
+    for (Entry<NGram, NGramStats> form : ngramForms.entrySet()) {
       orthographicForms.put(form.getKey(), form.getValue().getPositions().size());
+    }
     rank = Integer.MAX_VALUE;
   }
 
@@ -99,7 +100,7 @@ public class ClassificationInstance {
   public String toString() {
     Map<String, Integer> lemmasToFreqs = new HashMap<String, Integer>();
     for (Entry<NGram, Integer> ng : orthographicForms.entrySet()) {
-      String lemmaForm = ng.getKey().getSequenceAsString(SequenceType.lemma);
+      String lemmaForm = ng.getKey().getSequenceAsString(SequenceType.LEMMA);
       Integer actualFreq = ng.getValue();
       Integer prevVal = lemmasToFreqs.get(lemmaForm);
       lemmasToFreqs.put(lemmaForm, (prevVal == null ? 0 : prevVal) + actualFreq);

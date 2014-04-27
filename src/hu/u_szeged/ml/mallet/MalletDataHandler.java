@@ -89,15 +89,16 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   protected void setDoubleValue(String instanceId, String featureName, double value) {
     AugmentableFeatureVector fv = getInstanceData(instanceId);
     int index = featureAlphabet.getAlphabet().lookupIndex(featureName);
-    if (index < 0)
-      return; // it can occur when featureAlphabet.getStopGrowth()==true and the featureset does not contain the
-              // feature
+    if (index < 0) {
+      return; // it can occur when featureAlphabet.getStopGrowth()==true and the featureset does not contain the feature
+    }
     int location = fv.location(index);
     if (location < 0) {
       fv.add(index, value);
       featureAlphabet.add(index);
-    } else
+    } else {
       fv.setValueAtLocation(location, value);
+    }
   }
 
   public void createNewDataset(Map<String, Object> parameters) {
@@ -163,8 +164,9 @@ public class MalletDataHandler extends DataHandler implements Serializable {
       AugmentableFeatureVector fv = this.getInstanceData(inst);
       for (int i = 0; i < fv.numLocations(); ++i) {
         String featurename = (String) fv.getAlphabet().lookupObject(fv.getIndices()[i]);
-        if (featuresSelected.contains(featurename))
+        if (featuresSelected.contains(featurename)) {
           dh.setDoubleValue(inst, featurename, fv.getValues()[i]);
+        }
       }
       dh.setLabel(inst, this.getLabel(inst));
     }
@@ -183,12 +185,14 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   }
 
   public void addDataHandler(DataHandler dh) throws DataMiningException {
-    if (!(dh instanceof MalletDataHandler))
+    if (!(dh instanceof MalletDataHandler)) {
       throw new DataMiningException("MalletDataHandler can add just MalletDataHandlers");
+    }
     for (String inst : dh.getInstanceIds()) {
       AugmentableFeatureVector fv = ((MalletDataHandler) dh).getInstanceData(inst);
-      for (int i = 0; i < fv.numLocations(); ++i)
+      for (int i = 0; i < fv.numLocations(); ++i) {
         this.setDoubleValue(inst, (String) fv.getAlphabet().lookupObject(fv.getIndices()[i]), fv.getValues()[i]);
+      }
       this.setLabel(inst, dh.getLabel(inst));
     }
   }
@@ -203,8 +207,9 @@ public class MalletDataHandler extends DataHandler implements Serializable {
 
   public Set<String> getFeatureNames() {
     Set<String> featurenames = new HashSet<String>();
-    for (Object o : featureAlphabet.getAlphabet().toArray())
+    for (Object o : featureAlphabet.getAlphabet().toArray()) {
       featurenames.add((String) o);
+    }
     return featurenames;
   }
 
@@ -244,15 +249,19 @@ public class MalletDataHandler extends DataHandler implements Serializable {
     String classifierName = "MaxEntL1";
     // String classifierName = "C45";
     Double gaussianPrior = null;
-    if (parameters != null && parameters.containsKey("classifier"))
+    if (parameters != null && parameters.containsKey("classifier")) {
       classifierName = (String) parameters.get("classifier");
-    if (classifierName.equals("MaxEntL1") && parameters != null && parameters.containsKey("classifier"))
+    }
+    if (classifierName.equals("MaxEntL1") && parameters != null && parameters.containsKey("classifier")) {
       gaussianPrior = (Double) parameters.get("gaussianPrior");
+    }
     try {
       trainer = (ClassifierTrainer<?>) Class.forName("cc.mallet.classify." + classifierName + "Trainer").newInstance();
-      if (classifierName.equals("MaxEntL1"))
-        if (gaussianPrior != null)
+      if (classifierName.equals("MaxEntL1")) {
+        if (gaussianPrior != null) {
           ((MaxEntTrainer) trainer).setGaussianPriorVariance(gaussianPrior);
+        }
+      }
       // ((MaxEntTrainer)trainer).setGaussianPriorVariance(1.0);
       /*
        * ((C45Trainer)trainer).setMinNumInsts(3); ((C45Trainer)trainer).setDepthLimited(true); ((C45Trainer)trainer).setMaxDepth(2);
@@ -264,14 +273,16 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   }
 
   public Model trainClassifier() throws DataMiningException {
-    if (trainer == null)
+    if (trainer == null) {
       initClassifier(null);
+    }
     return new MalletClassifier(trainer.train(data));
   }
 
   public ClassificationResult classifyDataset(Model model) throws DataMiningException {
-    if (!(model instanceof MalletClassifier))
+    if (!(model instanceof MalletClassifier)) {
       throw new DataMiningException("MalletDataHandler can be used only by MALLET classifiers");
+    }
     return new MalletClassificationResult(((MalletClassifier) model).getClassifier().classify(data), this);
   }
 
@@ -349,12 +360,14 @@ public class MalletDataHandler extends DataHandler implements Serializable {
 
   public void removeInstance(String instanceId) {
     Integer number = instanceIds.remove(instanceId);
-    if (number == null)
+    if (number == null) {
       return;
+    }
     data.remove((int) number);
     for (Entry<String, Integer> indexPair : instanceIds.entrySet()) {
-      if (indexPair.getValue() > number)
+      if (indexPair.getValue() > number) {
         indexPair.setValue(indexPair.getValue() - 1);
+      }
     }
     // throw new DataMiningException("removeFeature is not implemented yet in MalletDataHandler");
   }
@@ -367,11 +380,13 @@ public class MalletDataHandler extends DataHandler implements Serializable {
         data.remove(next);
         instanceIt = data.iterator();
         Integer prevVal = instanceIds.remove(next.getName());
-        if (prevVal != null)
+        if (prevVal != null) {
           for (Entry<String, Integer> indexPair : instanceIds.entrySet()) {
-            if (indexPair.getValue() > prevVal)
+            if (indexPair.getValue() > prevVal) {
               indexPair.setValue(indexPair.getValue() - 1);
+            }
           }
+        }
       }
     }
   }
@@ -382,12 +397,14 @@ public class MalletDataHandler extends DataHandler implements Serializable {
       String line;
       while ((line = file.readLine()) != null) {
         String[] tokens = line.split("\\s");
-        if (!tokens[0].contains("@"))
+        if (!tokens[0].contains("@")) {
           throw new DataMiningException("Corrput input format. First token should contain @");
+        }
         String id = tokens[0].split("@")[0];
         setLabel(id, tokens[0].split("@")[1]);
-        for (int i = 1; i < tokens.length; ++i)
+        for (int i = 1; i < tokens.length; ++i) {
           setDoubleValue(id, tokens[i].split(":")[0], Double.parseDouble(tokens[i].split(":")[1]));
+        }
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -395,14 +412,15 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   }
 
   public void saveDataset(String target) {
-    if (!target.contains("|") || target.split("\\|")[1].equals("mallet"))
+    if (!target.contains("|") || target.split("\\|")[1].equals("mallet")) {
       saveDatasetMallet(target.split("\\|")[0]);
-    else if (target.split("\\|")[1].equals("svm"))
+    } else if (target.split("\\|")[1].equals("svm")) {
       saveDatasetSVM(target.split("\\|")[0]);
-    else if (target.split("\\|")[1].equals("weka"))
+    } else if (target.split("\\|")[1].equals("weka")) {
       saveDatasetWeka(target.split("\\|")[0]);
-    else
+    } else {
       System.err.println("unknow output format " + target.split("\\|")[1]);
+    }
   }
 
   public void saveDatasetMallet(String target) {
@@ -411,8 +429,9 @@ public class MalletDataHandler extends DataHandler implements Serializable {
       for (String id : instanceIds.keySet()) {
         out.print(id + "@" + getLabel(id));
         AugmentableFeatureVector fv = getInstanceData(id);
-        for (int i = 0; i < fv.numLocations(); ++i)
+        for (int i = 0; i < fv.numLocations(); ++i) {
           out.print("\t" + featureAlphabet.getAlphabet().lookupObject(fv.getIndices()[i]) + ":" + fv.getValues()[i]);
+        }
         out.println();
       }
       out.close();
@@ -427,8 +446,9 @@ public class MalletDataHandler extends DataHandler implements Serializable {
       for (String id : instanceIds.keySet()) {
         out.print(getLabel(id) ? "1" : "-1");
         AugmentableFeatureVector fv = getInstanceData(id);
-        for (int i = 0; i < fv.numLocations(); ++i)
+        for (int i = 0; i < fv.numLocations(); ++i) {
           out.print(" " + (fv.getIndices()[i] + 1) + ":" + fv.getValues()[i]);
+        }
         out.println();
       }
       out.close();
@@ -439,8 +459,9 @@ public class MalletDataHandler extends DataHandler implements Serializable {
 
   public void saveDatasetWeka(String target) {
     try {
-      if (!target.endsWith(".arff"))
+      if (!target.endsWith(".arff")) {
         target += ".arff";
+      }
       PrintWriter out = new PrintWriter(target);
       out.println("@relation MalletData");
       for (Object f : data.getAlphabet().toArray()) {
@@ -453,12 +474,14 @@ public class MalletDataHandler extends DataHandler implements Serializable {
         out.print("{");
         AugmentableFeatureVector fv = getInstanceData(id);
         for (int i = 0; i < fv.numLocations(); ++i) {
-          if (i > 0)
+          if (i > 0) {
             out.print(",");
+          }
           out.print((fv.getIndices()[i]) + " " + fv.getValues()[i]);
         }
-        if (getLabel(id))
+        if (getLabel(id)) {
           out.print("," + data.getAlphabet().size() + " 1");
+        }
         out.println("}");
       }
       out.close();
@@ -476,8 +499,9 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   }
 
   public void setDefaultFeatureValue(String featureName, String value) throws DataMiningException {
-    if (!nominalValues.containsKey(featureName))
+    if (!nominalValues.containsKey(featureName)) {
       throw new DataMiningException("setDefaultFeatureValue is called for a feature which is not nominal");
+    }
     if (nominalValues.get(featureName).contains(value)) {
       nominalValues.get(featureName).remove(value);
     }
@@ -517,15 +541,16 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   }
 
   public <T extends Comparable<?>> void setValue(String instanceId, String featureName, T value) throws DataMiningException {
-    if (featureName.startsWith("b_"))
+    if (featureName.startsWith("b_")) {
       setBinaryValue(instanceId, featureName, (Boolean) value);
-    else if (featureName.startsWith("t_"))
+    } else if (featureName.startsWith("t_")) {
       setBinaryValue(instanceId, featureName, (Boolean) value, true);
-    else if (featureName.startsWith("m_"))
+    } else if (featureName.startsWith("m_")) {
       setNominalValue(instanceId, featureName, (String) value);
-    else if (featureName.startsWith("m_"))
+    } else if (featureName.startsWith("m_")) {
       setNumericValue(instanceId, featureName, (Double) value);
-    else
+    } else {
       throw new DataMiningException("unknown featuretype " + featureName);
+    }
   }
 }

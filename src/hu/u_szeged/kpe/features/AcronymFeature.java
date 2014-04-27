@@ -1,8 +1,8 @@
 package hu.u_szeged.kpe.features;
 
 import hu.u_szeged.kpe.candidates.NGram;
-import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.candidates.NGram.SequenceType;
+import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.readers.DocumentData;
 import hu.u_szeged.utils.NLPUtils;
 
@@ -109,7 +109,7 @@ public class AcronymFeature extends Feature {
         abbreviations.addAll(doc.getAcronyms().keySet());
     }
 
-    String original = ngramForm.getKey().getSequenceAsString(SequenceType.original).replaceAll("-?s$", "");
+    String original = ngramForm.getKey().getSequenceAsString(SequenceType.ORIGINAL).replaceAll("-?s$", "");
     int matchingAcronyms = 0;
 
     for (String acronym : abbreviations) {

@@ -22,7 +22,6 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -388,16 +387,6 @@ public class KPEFilter implements Serializable {
     System.err.println(commonNGrams.size() + "\t" + m_Dictionary.size());
   }
 
-  public static String nGram2StemmedString(NGram ngram) {
-    List<String> tokens = new LinkedList<String>();
-    for (CoreLabel cl : ngram) {
-      tokens.add(cl.word().toLowerCase());
-    }
-    Collections.sort(tokens);
-    String ordered = NLPUtils.join(tokens.toArray(new String[tokens.size()]));
-    return NGram.ps.stemString(ordered);
-  }
-
   /**
    * Computes the feature values for a given phrase.
    */
@@ -405,14 +394,16 @@ public class KPEFilter implements Serializable {
       List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<Map<Integer, List<CoreMap>>> grammars, DataHandler dh, boolean train, DocumentData... docs) {
     Set<String> stemmedPhraseAlternations = new HashSet<String>();
     for (Entry<NGram, NGramStats> orthographicForm : phraseForms.getValue().entrySet()) {
-      stemmedPhraseAlternations.add(nGram2StemmedString(orthographicForm.getKey()));
+      stemmedPhraseAlternations.add(orthographicForm.getKey().getStemmedStringFrom());
     }
 
     double[] dedicatedFeats = new double[3];
     StringBuffer actualDocId = new StringBuffer((train && target ? "target_" : ""));
-    if (train)
-      for (DocumentData doc : docs)
+    if (train) {
+      for (DocumentData doc : docs) {
         actualDocId.append(doc.getDocId() + "_");
+      }
+    }
 
     String instanceId = (actualDocId.append(phraseForms.getKey()).toString()).replaceAll(" ", "_");
     // calculate feature values
@@ -427,7 +418,7 @@ public class KPEFilter implements Serializable {
         Integer prevVal = normalizedKeyphrases.get(keyphrase.getKey().getCanonicalForm());
         normalizedKeyphrases.put(keyphrase.getKey().getCanonicalForm(), (prevVal == null ? 0 : prevVal) + keyphrase.getValue());
 
-        String stemmedForm = nGram2StemmedString(keyphrase.getKey());
+        String stemmedForm = keyphrase.getKey().getStemmedStringFrom();
         prevVal = stemKeyphrases.get(stemmedForm);
         stemKeyphrases.put(stemmedForm, (prevVal == null ? 0 : prevVal) + keyphrase.getValue());
 
@@ -587,14 +578,16 @@ public class KPEFilter implements Serializable {
     Map<String, Set<Integer>> ngramSections = new HashMap<String, Set<Integer>>();
     Map<String, Integer> keys = new HashMap<String, Integer>();
     for (Entry<NGram, Integer> key : keyNGrams.entrySet()) {
-      Integer prevVal = keys.get(key.getKey().getCanonicalForm());
-      keys.put(key.getKey().getCanonicalForm(), (prevVal == null ? 0 : prevVal) + key.getValue());
+      String canonicalForm = key.getKey().getCanonicalForm();
+      Integer prevVal = keys.get(canonicalForm);
+      keys.put(canonicalForm, (prevVal == null ? 0 : prevVal) + key.getValue());
     }
     int sectionsToAdd = 0;
 
     for (Entry<Integer, List<CoreMap>> section : sectionSentences.entrySet()) {
-      if (section.getValue().size() > 0)
+      if (section.getValue().size() > 0) {
         sectionsToAdd++;
+      }
       for (CoreMap sentence : section.getValue()) {
         int numSeen = 0;
         for (CoreLabel word : sentence.get(TokensAnnotation.class)) {
@@ -603,7 +596,6 @@ public class KPEFilter implements Serializable {
           // if (word.get(OriginalTextAnnotation.class).equals("Recommended:"))
           // break review;
           String wordForm = word.word();
-          NGram.getNormalizedCoreLabel(word);
           boolean isStopWord = word.get(StopWordAnnotation.class);
           if ((!isStopWord && !posRegexp.matcher(word.tag()).matches()) || wordForm.split("\\s").length > 1
               || wordForm.matches("-[LR]RB-|\\p{Punct}+|.*[._:;].*")) {
@@ -619,8 +611,9 @@ public class KPEFilter implements Serializable {
           buffer[maxPhraseLength - 1] = word;
           numSeen = Math.min(++numSeen, maxPhraseLength);
 
-          if (word.get(StopWordAnnotation.class))
+          if (word.get(StopWordAnnotation.class)) {
             continue;
+          }
 
           if (indicatorWords != null && !wordForm.matches("\\d+") && word.tag().matches("(?i)vb.?")) {
             Integer prevVal = indicatorWords.get(word);
@@ -633,8 +626,9 @@ public class KPEFilter implements Serializable {
             phraseBuffer = (NGram) phraseBuffer.clone();
             phraseBuffer.add(0, actWord);
 
-            if (i < minPhraseLength || actWord.get(StopWordAnnotation.class))
+            if (i < minPhraseLength || actWord.get(StopWordAnnotation.class)) {
               continue;
+            }
 
             String canonicalForm = phraseBuffer.getCanonicalForm();
             Set<Integer> sections = ngramSections.get(canonicalForm);
@@ -685,8 +679,10 @@ public class KPEFilter implements Serializable {
     int pos = 1, lastSectionNumber = sections.lastKey(), referencePosition = Integer.MAX_VALUE;
     for (Entry<Integer, List<CoreMap>> sectionSentences : sections.entrySet()) {
       int sentenceNumber = 0;
-      if (sectionSentences.getKey() > maxSection)
+      if (sectionSentences.getKey() > maxSection) {
         break;
+      }
+
       for (CoreMap sentence : sectionSentences.getValue()) {
         // if the line contains no lower case letters, it might indicate that it is a section header, so it seems
         // to be a good idea not to regard anything occurring in it as an acronym, so rather continue
@@ -734,8 +730,9 @@ public class KPEFilter implements Serializable {
             phraseBuffer.add(0, actWord);
 
             // Don't consider phrases less than minimal length or beginning with a stop word
-            if (i < minPhraseLength || actWord.get(StopWordAnnotation.class))
+            if (i < minPhraseLength || actWord.get(StopWordAnnotation.class)) {
               continue;
+            }
 
             Map<NGram, NGramStats> orthologicalForms = hash.get(phraseBuffer.getCanonicalForm());
             orthologicalForms = orthologicalForms == null ? new HashMap<NGram, NGramStats>() : orthologicalForms;

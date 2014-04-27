@@ -31,11 +31,11 @@ public class MalletClassifier extends Model {
 
   public void printModel(PrintWriter out, int numOfExtremeFeatures) {
     if (classifier instanceof MaxEnt) {
-      out.println(((MaxEnt) classifier).getParameters().length + "\t" + ((MaxEnt) classifier).getDefaultFeatureIndex() + "\t"
-          + classifier.getAlphabet().size());
+      out.println("Num of features: " + classifier.getAlphabet().size());
       ((MaxEnt) classifier).printExtremeFeatures(out, Math.min(numOfExtremeFeatures, classifier.getAlphabet().size()));
       out.flush();
-    } else
+    } else {
       classifier.print(out);
+    }
   }
 }

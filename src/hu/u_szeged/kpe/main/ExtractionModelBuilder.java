@@ -107,7 +107,7 @@ public class ExtractionModelBuilder {
     m_MinPhraseLength = newMinPhraseLength;
   }
 
-  public void buildModel(int foldNum, int totalFolds, List<String> features, String classifier, double commonWordsThreshold, double selectedFeatureRatio,
+  public String buildModel(int foldNum, int totalFolds, List<String> features, String classifier, double commonWordsThreshold, double selectedFeatureRatio,
       boolean[] employBIESmarkup, DocumentSet targetDomainDocs, boolean noSWpruning, boolean noPOSpruning, boolean serialize) throws Exception {
     m_KPEFilter = new KPEFilter(noSWpruning, noPOSpruning);
     m_KPEFilter.setMaxPhraseLength(getMaxPhraseLength());
@@ -127,8 +127,9 @@ public class ExtractionModelBuilder {
     boolean containsScientific = false;
     for (DocumentData doc : documents) {
       containsScientific = containsScientific || doc.isScientific();
-      if (++i % 500 == 0)
+      if (++i % 500 == 0) {
         System.err.print(i + "\t");
+      }
       m_KPEFilter.updateGlobalDictionary(doc.getKeyphrases(), doc.getSections(docSet.getReader(), serialize));
     }
 
@@ -136,14 +137,15 @@ public class ExtractionModelBuilder {
       m_KPEFilter.setCommonWords(commonWordsThreshold, documents.size());
     }
 
-    buildClassifier(foldNum, documents, selectedFeatureRatio, serialize);
+    String log = buildClassifier(foldNum, documents, selectedFeatureRatio, serialize);
     System.err.println("Classifier built of " + documents.size() + " documents in " + ((System.currentTimeMillis() - KpeMain.time) / 1000d) + " seconds.");
+    return log;
   }
 
   /**
    * Builds the classifier.
    */
-  private void buildClassifier(int foldNum, List<DocumentData> docsToLearn, double featureRatio, boolean serialize) {
+  private String buildClassifier(int foldNum, List<DocumentData> docsToLearn, double featureRatio, boolean serialize) {
     m_KPEFilter.initializeFeatureFields();
     System.err.println("Global dictionaries built...\t" + (System.currentTimeMillis() - KpeMain.time) / 1000d);
     Map<String, Object> initClassifier = new HashMap<String, Object>();
@@ -174,18 +176,18 @@ public class ExtractionModelBuilder {
       }
     }
 
-    for (Entry<String, Map<Double, Integer>> feats : m_KPEFilter.getFeatures().getFeatureValDistribution().entrySet()) {
-      int i = 0, sum = 0;
-      if (feats.getKey().contains("TfIdf") && foldNum == 9) {
-        for (Entry<Double, Integer> v : feats.getValue().entrySet()) {
-          if (++i < 10 || i > 6000)
-            System.err.println(i + "\t" + v);
-          sum += v.getValue();
-        }
-        System.err.println(sum + "\t" + i);
-      }
-    }
-
+    // for (Entry<String, Map<Double, Integer>> feats : m_KPEFilter.getFeatures().getFeatureValDistribution().entrySet()) {
+    // int i = 0, sum = 0;
+    // if (feats.getKey().contains("TfIdf") && foldNum == 9) {
+    // for (Entry<Double, Integer> v : feats.getValue().entrySet()) {
+    // if (++i < 10 || i > 6000)
+    // System.err.println(i + "\t" + v);
+    // sum += v.getValue();
+    // }
+    // System.err.println(sum + "\t" + i);
+    // }
+    // }
+    String log = "N/A";
     try {
       int instanceNum = dh.getInstanceCount();
       int featureNum = dh.getFeatureCount();
@@ -210,17 +212,26 @@ public class ExtractionModelBuilder {
       alphabets.add(dh.getAlphabet("feature"));
       alphabets.add(dh.getAlphabet("label"));
       m_KPEFilter.setAlphabets(alphabets);
-      System.err.println(instanceNum + " inst.\t" + featureNum + " (" + dh.getFeatureCount() + ") features\t" + dh.getFeatureNames().size()
-          + " pruned features\t" + (System.currentTimeMillis() - KpeMain.time) / 1000.0d);
+
+      // let's count the number of positive and negative training instances
+      int positiveTrainingInstances = 0, negativeTrainingInstances = 0;
+      for (String s : dh.instanceIds.keySet()) {
+        if (Boolean.parseBoolean((String) dh.getLabel(s))) {
+          positiveTrainingInstances++;
+        } else {
+          negativeTrainingInstances++;
+        }
+      }
+
+      log = instanceNum + " inst.\t" + positiveTrainingInstances + " pos + " + negativeTrainingInstances + " neg\t" + featureNum + " (" + dh.getFeatureCount()
+          + ") features\t" + dh.getFeatureNames().size() + " pruned features\t" + (System.currentTimeMillis() - KpeMain.time) / 1000.0d;
 
       Model learnedModel = dh.trainClassifier();
       m_KPEFilter.setModel(learnedModel);
-      // if (m_KPEFilter.getClassifierName().contains("MaxEnt"))
-      // ((MalletClassifier) learnedModel).printModel(new PrintWriter(foldNum + "_statistics.txt"),
-      // Math.min(dh.getFeatureCount(), 25));
     } catch (Exception e) {
       e.printStackTrace();
     }
-    System.err.println((System.currentTimeMillis() - KpeMain.time) / 1000d);
+    System.err.println(log);
+    return log;
   }
 }

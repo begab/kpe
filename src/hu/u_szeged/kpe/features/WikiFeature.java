@@ -1,8 +1,8 @@
 package hu.u_szeged.kpe.features;
 
 import hu.u_szeged.kpe.candidates.NGram;
-import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.candidates.NGram.SequenceType;
+import hu.u_szeged.kpe.candidates.NGramStats;
 import hu.u_szeged.kpe.main.KPEFilter;
 import hu.u_szeged.kpe.readers.DocumentData;
 import hu.u_szeged.utils.NLPUtils;
@@ -32,7 +32,7 @@ import edu.stanford.nlp.util.CoreMap;
 public class WikiFeature extends Feature {
   private static final long serialVersionUID = 1L;
   /** */
-  private transient Map<String, Set<String>> categoryCache;
+  private static Map<String, Set<String>> categoryCache;
 
   // TODO Q: Should the usage of categoryCache be limited somehow (e.g. by constraining it not to become extremely big) when there are lots of
   // documents?? A: Probably, we shall return to this question after the first OutOfMemoryException happened.
@@ -43,7 +43,9 @@ public class WikiFeature extends Feature {
   }
 
   public void setFeatureField(KPEFilter kf) {
-    categoryCache = new HashMap<>();
+    if (categoryCache == null) {
+      categoryCache = new HashMap<>();
+    }
   }
 
   /**
@@ -80,7 +82,7 @@ public class WikiFeature extends Feature {
 
   public void value(String phrase, int[] length, Entry<NGram, NGramStats> ngramForm, boolean train, int docToCheck,
       List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<CoreMap> sentences, DocumentData... docs) {
-    String wikiForm = ngramForm.getKey().getSequenceAsString(SequenceType.wikiForm).toLowerCase();
+    String wikiForm = ngramForm.getKey().getSequenceAsString(SequenceType.WIKI_FROM).toLowerCase();
     for (String category : getNormalizedWikiCategories(wikiForm)) {
       updateFeatureVals(this.getClass().getName() + "_" + category, 1.0d, docToCheck);
     }

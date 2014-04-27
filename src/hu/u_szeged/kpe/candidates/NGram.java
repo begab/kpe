@@ -38,14 +38,14 @@ import edu.stanford.nlp.pipeline.StopWordAnnotator.StopWordAnnotation;
 
 public class NGram extends ArrayList<CoreLabel> implements Cloneable {
 
-  public static PorterStemmer ps = new PorterStemmer();
+  private static PorterStemmer ps = new PorterStemmer();
   private static final long serialVersionUID = 3797853353962652098l;
   private static final CoreLabelComparator coreLabelComparator = new CoreLabelComparator();
   private static WordNetDatabase wn_database;
   private String normalizedForm;
 
   public enum SequenceType {
-    tag, stem, lemma, wikiForm, original
+    TAG, STEM, LEMMA, WIKI_FROM, ORIGINAL, NORMALIZED
   }
 
   public NGram() {
@@ -54,7 +54,6 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
 
   public NGram(int n) {
     super(n);
-    normalizedForm = "";
   }
 
   public NGram(String toAnnotate) {
@@ -149,6 +148,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
         System.exit(1);
       }
     }
+    wn_database = null;
     return false;
   }
 
@@ -169,13 +169,15 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     // System.out.println(lemma + "\t" + pos);
     for (Synset synset : synsets) {
       SynsetType actualType = synset.getType();
-      if (!synsetTypes.contains(actualType))
+      if (!synsetTypes.contains(actualType)) {
         continue;
+      }
       WordSense[] wss = actualType == SynsetType.VERB ? synset.getDerivationallyRelatedForms(lemma) : new WordSense[] { new WordSense(lemma, synset) };
       for (WordSense w : wss) {
         Synset s = w.getSynset();
-        if (pos.startsWith("vb") && s.getType() != SynsetType.NOUN)
+        if (pos.startsWith("vb") && s.getType() != SynsetType.NOUN) {
           continue;
+        }
 
         String[] forms = s.getWordForms();
         for (String form : forms) {
@@ -192,6 +194,10 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
         argMax = transformationEntry.getKey();
       }
     }
+    // just in case someone would be curious what kind of rewriting might happen there
+    // if (!lemma.toLowerCase().equals(argMax.toLowerCase())) {
+    // System.err.println(lemma + "-->" + argMax);
+    // }
     return ps.stemString(argMax);
   }
 
@@ -205,9 +211,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
 
   public static String getNormalizedCoreLabel(CoreLabel cl) {
     boolean isStopWord = cl.has(StopWordAnnotation.class) && cl.get(StopWordAnnotation.class);
-    String normalization = cl.get(NormalizerAnnotation.class);
-    if (normalization != null)
-      return isStopWord ? null : normalization;
+    String normalization = ps.stem(cl.lemma().toLowerCase());
 
     if (isStopWord) {
       cl.set(NormalizerAnnotation.class, cl.lemma().toLowerCase());
@@ -225,8 +229,9 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     List<String> normalizedTokens = new LinkedList<String>();
     for (CoreLabel cl : this) {
       String normalized = getNormalizedCoreLabel(cl);
-      if (normalized != null)
+      if (normalized != null) {
         normalizedTokens.add(normalized);
+      }
     }
     Collections.sort(normalizedTokens);
     StringBuilder sb = new StringBuilder();
@@ -241,21 +246,25 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     for (int o = 0; o < size(); ++o) {
       CoreLabel ew = get(o);
       switch (type) {
-      case tag:
-        sb[o] = ew.get(PartOfSpeechAnnotation.class);
+      case TAG:
+        sb[o] = ew.tag();
         break;
-      case stem:
+      case NORMALIZED:
         sb[o] = ew.get(NormalizerAnnotation.class);
         break;
-      case lemma:
+      case STEM:
+        sb[o] = ps.stem(ew.word().toLowerCase());
+        break;
+      case LEMMA:
         sb[o] = ew.get(LemmaAnnotation.class);
         break;
-      case wikiForm:
+      case WIKI_FROM:
         sb[o] = (o == size() - 1) ? ew.get(LemmaAnnotation.class) : ew.word();
         break;
-      case original:
+      case ORIGINAL:
         sb[o] = ew.word();
         break;
+
       }
     }
     return sb;
@@ -270,13 +279,27 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
   }
 
   public String getCanonicalForm() {
+    if (normalizedForm == null) {
+      setNormalizedForm();
+    }
     return normalizedForm;
+  }
+
+  public String getStemmedStringFrom() {
+    List<String> tokens = new LinkedList<String>();
+    for (CoreLabel cl : this) {
+      tokens.add(cl.word().toLowerCase());
+    }
+    Collections.sort(tokens);
+    String ordered = NLPUtils.join(tokens.toArray(new String[tokens.size()]));
+    return ps.stemString(ordered);
   }
 
   public String toString() {
     StringBuffer sb = new StringBuffer();
-    for (CoreLabel cl : this)
+    for (CoreLabel cl : this) {
       sb.append(cl.word() + ' ');
+    }
     return sb.toString().trim();
   }
 }

@@ -70,7 +70,7 @@ public abstract class KpeReader {
     isSyntaxOn = isSyntacticFeatureOn;
     if (sentenceAnalyzer == null) {
 
-      String annotators = "tokenize, ssplit, pos, lemma, stopword, normalize";
+      String annotators = "tokenize, ssplit, pos, lemma, stopword";
       annotators += isMweFeatureOn ? ", mwe" : "";
       annotators += isNeFeatureOn ? ", ner" : "";
       annotators += isSyntacticFeatureOn ? ", parse" : "";

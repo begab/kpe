@@ -167,15 +167,18 @@ public class KpeMain {
     String modelName = "models/" + loc[0] + "/" + (loc[1] != null ? loc[1] + "/" : "") + mode + "_"
         + (selectedFeatureRatio < 1.0d ? "fs_" + selectedFeatureRatio + "_" : "") + (employBIESmarkup[0] ? "BIES_pos_" : "")
         + (employBIESmarkup[1] ? "BIES_ne_" : "") + (employBIESmarkup[2] ? "BIES_suffix_" : "") + (wordNetUsage ? "wn_" : "")
-        + (!noStopWordPruning ? "sw_" : "") + (!noPosEndingPruning ? "pos_" : "") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
+        + (noStopWordPruning ? "" : "sw_") + (noPosEndingPruning ? "" : "pos_") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
         + (totalFolds > 1 ? "fold" + actualFold + "_" : "") + goldAnn + ".model";
     System.err.println(modelName);
-    km.buildModel(actualFold, totalFolds, selectedFeatures, classifier, commonWords, selectedFeatureRatio, employBIESmarkup, ke.getDocSet(), noStopWordPruning,
-        noPosEndingPruning, serialize);
+    String log = km.buildModel(actualFold, totalFolds, selectedFeatures, classifier, commonWords, selectedFeatureRatio, employBIESmarkup, ke.getDocSet(),
+        noStopWordPruning, noPosEndingPruning, serialize);
     KPEFilter kf = km.getKPEFilter();
     if (kf.getClassifierName().contains("MaxEnt")) {
       new File("models/" + loc[0]).mkdirs();
-      ((MalletClassifier) kf.getModel()).printModel(new PrintWriter(modelName + "_statistics.txt"), 50);
+      PrintWriter logger = new PrintWriter(modelName + "_statistics.txt");
+      logger.println(log);
+      ((MalletClassifier) kf.getModel()).printModel(logger, 50);
+      logger.close();
     }
     NLPUtils.serialize(km.getKPEFilter(), modelName);
   }
@@ -185,14 +188,14 @@ public class KpeMain {
     String modelName = "models/" + loc[0] + "/" + (loc[1] != null ? loc[1] + "/" : "") + mode + "_"
         + (selectedFeatureRatio < 1.0d ? "fs_" + selectedFeatureRatio + "_" : "") + (employBIESmarkup[0] ? "BIES_pos_" : "")
         + (employBIESmarkup[1] ? "BIES_ne_" : "") + (employBIESmarkup[2] ? "BIES_suffix_" : "") + (wordNetUsage ? "wn_" : "")
-        + (!noStopWordPruning ? "sw_" : "") + (!noPosEndingPruning ? "pos_" : "") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
+        + (noStopWordPruning ? "" : "sw_") + (noPosEndingPruning ? "" : "pos_") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
         + (totalFolds > 1 ? "fold" + actualFold + "_" : "") + goldAnn[0] + ".model";
     try {
       if (!new File(modelName).exists()) {
         System.err.println("The desired model (" + modelName + ") cannot be found on the computer, the config needs to be modified in order to generate it.");
         System.exit(1);
       }
-      System.err.println("Extration of keyphrases begins. Output will be located at ./models/" + loc[0] + "/ directory.");
+      System.err.println("Extrcation of keyphrases begins. Output will be located at ./models/" + loc[0] + "/ directory.");
       ke.loadModel(modelName);
       ke.extractKeyphrases(actualFold, totalFolds, modelName.replace(".model", "_" + goldAnn[1] + ".out"), serialize);
     } catch (Exception e) {
