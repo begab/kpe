@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.StopWordAnnotator.StopWordAnnotation;
+
 public class ClassificationInstance {
 
   private String id;
@@ -106,5 +109,34 @@ public class ClassificationInstance {
       lemmasToFreqs.put(lemmaForm, (prevVal == null ? 0 : prevVal) + actualFreq);
     }
     return id + "\t" + tfIdf + "\t" + firstOcc + "\t" + prob + "\t" + rank + "\t" + label + "\t" + orthographicForms + "\t" + lemmasToFreqs;
+  }
+
+  /**
+   * Tries to determine the most likely form of a normalized candidate as acting a keyphrase.
+   * 
+   * @param inst
+   * @return
+   */
+  public String getProbableForm() {
+    StringBuffer toWriteOut = new StringBuffer();
+    int max = Integer.MIN_VALUE;
+    for (Entry<NGram, Integer> ngram : getOrthographicForms().entrySet()) {
+      boolean hasStopword = false;
+      StringBuffer temp = new StringBuffer();
+      NGram ng = ngram.getKey();
+      for (int i = 0; i < ng.size(); ++i) {
+        CoreLabel cl = ng.get(i);
+        temp.append((i > 0 ? " " : "") + cl.word().toLowerCase());
+        hasStopword = hasStopword || cl.get(StopWordAnnotation.class);
+      }
+
+      if ((!hasStopword && ngram.getValue() > max)) {
+        max = ngram.getValue();
+        toWriteOut = temp;
+      } else if (toWriteOut.length() == 0) {
+        toWriteOut = temp;
+      }
+    }
+    return toWriteOut.toString();
   }
 }

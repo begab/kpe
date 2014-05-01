@@ -1,6 +1,5 @@
 package hu.u_szeged.kpe.main;
 
-import hu.u_szeged.kpe.candidates.NGram;
 import hu.u_szeged.kpe.readers.DocumentData;
 import hu.u_szeged.kpe.readers.DocumentSet;
 import hu.u_szeged.utils.ClassificationInstance;
@@ -12,10 +11,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
-
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.StopWordAnnotator.StopWordAnnotation;
 
 /**
  * The class that executes keyphrase extraction itself.
@@ -90,17 +85,24 @@ public class KeyPhraseExtractor {
    * @param prunedPhrases
    * @param doc
    */
-  private void writeOutKeyphrases(PrintWriter out, List<int[]> length, List<ClassificationInstance> prunedPhrases, DocumentData doc) {
+  private String writeOutKeyphrases(PrintWriter out, List<int[]> length, List<ClassificationInstance> prunedPhrases, DocumentData doc) {
     out.print("\n\n----------" + doc.getFile() + "_" + doc.getLineNumInFile() + "----------");
     if (length != null && length.size() == 1) {
       int[] l = length.get(0);
       out.print("\t" + l[0] + "\t" + l[1]);
     }
 
-    for (ClassificationInstance ci : prunedPhrases) {
-      out.print("\n" + ci);
+    StringBuffer keyphrases = new StringBuffer();
+
+    for (int i = 0; i < prunedPhrases.size(); ++i) {
+      ClassificationInstance inst = prunedPhrases.get(i);
+      out.print("\n" + inst);
+      if (i < 15) {
+        keyphrases.append(inst.getProbableForm() + (i < 14 ? "," : ""));
+      }
     }
     out.flush();
+    return keyphrases.toString();
   }
 
   public void extractKeyphrases(int fold, int totalFolds, String fileName, boolean serialize) throws Exception {
@@ -117,34 +119,9 @@ public class KeyPhraseExtractor {
       List<ClassificationInstance> rankedPhrases = m_KPEFilter.rankDocumentInstances(docSet.getReader(), length, serialize, doc);
       // if (m_prune)
       // rankedPhrases = filterTopInstances(rankedPhrases);
-      writeOutKeyphrases(out, length, rankedPhrases.subList(0, Math.min(m_numPhrases, rankedPhrases.size())), doc);
+      String response = writeOutKeyphrases(out, length, rankedPhrases.subList(0, Math.min(m_numPhrases, rankedPhrases.size())), doc);
       out.println("\nEtalon set: " + doc.getKeyphrases().keySet());
-
-      StringBuffer resultLine = new StringBuffer(doc.getFile().replaceAll(".*([CIJH]-\\d+).*", "$1")
-          + (doc.getLineNumInFile() == 0 ? "" : doc.getLineNumInFile()) + " : ");
-      for (int index = 0; index < rankedPhrases.size(); ++index) {
-        ClassificationInstance inst = rankedPhrases.get(index);
-        if (index < 15) {
-          StringBuffer toWriteOut = new StringBuffer();
-          int max = Integer.MIN_VALUE;
-          for (Entry<NGram, Integer> ngram : inst.getOrthographicForms().entrySet()) {
-            boolean hasStopword = false;
-            StringBuffer temp = new StringBuffer();
-            for (CoreLabel cl : ngram.getKey()) {
-              temp.append(cl.word().toLowerCase() + " ");
-              hasStopword = hasStopword || cl.get(StopWordAnnotation.class);
-            }
-
-            if (!hasStopword && ngram.getValue() > max) {
-              max = ngram.getValue();
-              toWriteOut = new StringBuffer(temp.substring(0, temp.length() - 1));
-            } else if (toWriteOut.length() == 0)
-              toWriteOut = new StringBuffer(temp.substring(0, temp.length() - 1));
-          }
-          resultLine.append(toWriteOut + ",");
-        }
-      }
-      out.println(resultLine.substring(0, resultLine.length() - 1));
+      out.println(doc.getFile().replaceAll(".*([CIJH]-\\d+).*", "$1") + (doc.getLineNumInFile() == 0 ? "" : doc.getLineNumInFile()) + " : " + response);
     }
     out.close();
   }
