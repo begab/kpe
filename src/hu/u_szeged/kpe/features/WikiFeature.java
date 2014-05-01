@@ -75,7 +75,7 @@ public class WikiFeature extends Feature {
           normalizedCategories.add(joinedVersion);
         }
       }
-      categoryCache.put(articleName.toLowerCase(), categories);
+      categoryCache.put(articleName.toLowerCase(), normalizedCategories);
     }
     return normalizedCategories;
   }
