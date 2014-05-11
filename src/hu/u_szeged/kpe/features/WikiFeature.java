@@ -58,9 +58,11 @@ public class WikiFeature extends Feature {
     Set<String> normalizedCategories = categoryCache.get(articleName.toLowerCase());
     if (normalizedCategories == null) {
       normalizedCategories = new HashSet<>();
-      Set<String> categories = ((Map<String, Integer>) WikiQuery.performQuery(articleName.toLowerCase(), QueryType.CATEGORY)).keySet();
 
-      for (String category : categories) {
+      List<Object> categories = ((List<Object>) WikiQuery.performQuery(articleName.toLowerCase(), QueryType.CATEGORY));
+      // += 2 is used as every 2nd (even) Object is a count, while the odd indices stand for category names
+      for (int i = 0; i < categories.size() / 2; i += 2) {
+        String category = (String) categories.get(i);
         AbstractSequentialList<String> tokens = new LinkedList<String>();
         Matcher m = p.matcher(category);
         category = m.replaceAll("");

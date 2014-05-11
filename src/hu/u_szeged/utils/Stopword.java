@@ -31,10 +31,11 @@ public class Stopword implements Serializable {
 
   public boolean isStopword(CoreLabel ew) {
     String lemma = ew.get(LemmaAnnotation.class);
-    if (lemma == null)
+    if (lemma == null) {
       System.err.println("No lemma for token " + ew);
-    else
+    } else {
       lemma = lemma.toLowerCase();
+    }
     return isStopword(ew.word().toLowerCase()) || (lemma != null && isStopword(lemma));
   }
 }

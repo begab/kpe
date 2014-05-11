@@ -259,8 +259,9 @@ public class KPEFilter implements Serializable {
 
   public void initializeFeatureFields() {
     features.get(0).setBinarization(!classifierName.equalsIgnoreCase("naivebayes"));
-    for (Feature f : features)
+    for (Feature f : features) {
       f.setFeatureField(this);
+    }
   }
 
   // private String trasformSWNtoStanfordPOS(String swnPOS) {
@@ -688,6 +689,7 @@ public class KPEFilter implements Serializable {
           // experiments TODO so remove it A.S.A.P.
           // if (word.get(OriginalTextAnnotation.class).equals("Recommended:"))
           // break review;
+
           if (REFERENCE_PATTERN.matcher(word.word()).matches()) {
             referencePosition = pos;
           }

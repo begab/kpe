@@ -6,8 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,8 +35,7 @@ public class WikiQuery {
       e.printStackTrace();
     }
     Gson g = new Gson();
-    return g.fromJson(response.toString(), qt == QueryType.IDS ? new TypeToken<Set<Integer>>() {
-    }.getType() : new TypeToken<Map<String, Integer>>() {
+    return g.fromJson(response.toString(), new TypeToken<Collection<Object>>() {
     }.getType());
   }
 }
