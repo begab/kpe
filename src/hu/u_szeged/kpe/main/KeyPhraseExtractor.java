@@ -117,8 +117,7 @@ public class KeyPhraseExtractor {
     for (DocumentData doc : documents) {
       List<int[]> length = new ArrayList<>(1);
       List<ClassificationInstance> rankedPhrases = m_KPEFilter.rankDocumentInstances(docSet.getReader(), length, serialize, doc);
-      // if (m_prune)
-      // rankedPhrases = filterTopInstances(rankedPhrases);
+
       String response = writeOutKeyphrases(out, length, rankedPhrases.subList(0, Math.min(m_numPhrases, rankedPhrases.size())), doc);
       out.println("\nEtalon set: " + doc.getKeyphrases().keySet());
       out.println(doc.getFile().replaceAll(".*([CIJH]-\\d+).*", "$1") + (doc.getLineNumInFile() == 0 ? "" : doc.getLineNumInFile()) + " : " + response);

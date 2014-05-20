@@ -242,8 +242,9 @@ public class KpeMain {
     }
     String[] params = { "Reader class and location(s) for training:", "Reader class and location(s) for testing:", "Classifier to use:",
         "Feature encoding to use:", "Number of keyphrases to extract?",
-        "Location of  WordNet dict directory (or type in 'FALSE' in case you do not wish to use it)?", "stopword candidate phrase pruning not to be used?",
-        "pos ending-based candidate phrase pruning not to be used?", "B(egin)I(nside)E(nd)S(ingle) feature markup?", "serialize grammar files?" };
+        "Location of  WordNet dict directory (or type in 'FALSE' in case you do not wish to use it)?",
+        "pos ending-based candidate phrase pruning _not_ to be used?", "stopword candidate phrase pruning _not_ to be used?",
+        "B(egin)I(nside)E(nd)S(ingle) feature markup?", "serialize grammar files?" };
     args = Arrays.copyOf(args, params.length);
     for (int i = 0; i < args.length; ++i) {
       if (args[i] == null) {
@@ -281,7 +282,8 @@ public class KpeMain {
     int adaptation = -1;
     double selectedFeatureRatio = 1.0d;
 
-    KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, Integer.parseInt(featureCoding), filtration, wordNetParameter);
+    int encodedFeatures = Integer.parseInt(featureCoding);
+    KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, encodedFeatures, filtration, wordNetParameter);
     String trainParameters = args[0], testParameters = args[1];
     boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation, serializeGrammar);
 
@@ -298,9 +300,9 @@ public class KpeMain {
           continue;
         }
         if (fold == 1) {
-          System.err.println(featureCoding);
+          System.err.println(encodedFeatures);
           System.err.println("Reader phrases " + (goldAnn[0] ? "" : "not ") + "used.");
-          System.err.println("WordNet is " + (wordNetParameter.equalsIgnoreCase("false") ? "" : "not ") + "used.");
+          System.err.println("WordNet is " + (wordNetParameter.equalsIgnoreCase("false") ? "not " : "") + "used.");
           System.err.println("POS ending pruning is " + (kpe.getNoPosEndingPruning() ? "not " : "") + "used.");
           System.err.println("Stopword pruning is " + (kpe.getNoStopWordPruning() ? "not " : "") + "used.");
           System.err.println(args[1] + " will be keyphrased with a " + classifier + " classifier"

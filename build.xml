@@ -3,24 +3,25 @@
               Any modifications will be overwritten.
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="keyphraseExtractor">
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="kpe">
     <property environment="env"/>
+    <property name="keyphraseRest.location" value="../keyphraseRest"/>
     <property name="ECLIPSE_HOME" value="../../../../opt/eclipse"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.7"/>
     <property name="source" value="1.7"/>
-    <path id="keyphraseExtractor.classpath">
-        <pathelement location="bin"/>
-        <pathelement location="lib/jaws-bin.jar"/>
-        <pathelement location="lib/google-gson-2.2.4/gson-2.2.4.jar"/>
-        <pathelement location="lib/stanford-corenlp-full-2014-01-04/ejml-0.23.jar"/>
-        <pathelement location="lib/stanford-corenlp-full-2014-01-04/joda-time.jar"/>
-        <pathelement location="lib/stanford-corenlp-full-2014-01-04/jollyday.jar"/>
-        <pathelement location="lib/stanford-corenlp-full-2014-01-04/stanford-corenlp-3.3.1-models.jar"/>
-        <pathelement location="lib/stanford-corenlp-full-2014-01-04/stanford-corenlp-3.3.1.jar"/>
-        <pathelement location="lib/stanford-corenlp-full-2014-01-04/xom.jar"/>
-        <pathelement location="lib/mallet-deps.jar"/>
-        <pathelement location="lib/mallet.jar"/>
+    <path id="kpe.classpath">
+    	<pathelement location="bin"/>
+    	<pathelement location="lib/jaws-bin.jar"/>
+    	<pathelement location="lib/google-gson-2.2.4/gson-2.2.4.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/ejml-0.23.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/joda-time.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/jollyday.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/stanford-corenlp-3.3.1-models.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/stanford-corenlp-3.3.1.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/xom.jar"/>
+    	<pathelement location="lib/mallet-deps.jar"/>
+    	<pathelement location="lib/mallet.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -41,10 +42,17 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="keyphraseExtractor.classpath"/>
+            <classpath refid="kpe.classpath"/>
         </javac>
     </target>
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${keyphraseRest.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${keyphraseRest.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
     <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
         <copy todir="${ant.library.dir}">
             <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
@@ -62,14 +70,14 @@
         <java classname="hu.u_szeged.kpe.KpeMain" failonerror="true" fork="yes">
             <jvmarg line="-Xmx3500m"/>
             <arg line="-paramFile config.txt"/>
-            <classpath refid="keyphraseExtractor.classpath"/>
+            <classpath refid="kpe.classpath"/>
         </java>
     </target>
     <target description="a keyphrase extraction model is build based on the contents of the parameter file config.txt" name="KpeMainNoTraining">
         <java classname="hu.u_szeged.kpe.KpeMain" failonerror="true" fork="yes">
             <jvmarg line="-Xmx3500m"/>
             <arg line="-paramFile config_no_training.txt"/>
-            <classpath refid="keyphraseExtractor.classpath"/>
+            <classpath refid="kpe.classpath"/>
         </java>
     </target>
 </project>

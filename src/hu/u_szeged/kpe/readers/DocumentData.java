@@ -106,13 +106,14 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
       return hash;
     for (String tok : keyphrases.split("(\r?\n)+")) {
       tok = tok.trim();
-      if (tok.length() == 0)
+      if (tok.length() == 0) {
         continue;
+      }
 
       String newTok;
       if (tok.equalsIgnoreCase("c++")) {
         newTok = tok;
-      } else if (tok.startsWith(".net")) {
+      } else if (tok.toLowerCase().startsWith(".net")) {
         newTok = tok;
       } else {
         newTok = tok.replaceAll("^\\p{Punct}|\\p{Punct}$", "");
