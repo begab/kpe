@@ -26,6 +26,8 @@
 
 package edu.stanford.nlp.pipeline;
 
+import hu.u_szeged.nlp.pos.MagyarlancResourceHolder;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,6 +82,7 @@ import edu.stanford.nlp.util.ReflectionLoading;
 public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
   // EXTENSION
+  public static String lang = null;
   /*
    * List of all known annotator property names Add new annotators and/or annotators from other groups here!
    */
@@ -227,6 +230,26 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       fromClassPath.putAll(props);
       props = fromClassPath;
     }
+
+    // EXTENSION
+    lang = props.getProperty("lang", "en");
+
+    if (!props.containsKey("pos.model")) {
+      if (lang.equals("hu")) {
+        MagyarlancResourceHolder.initCorpus(System.getProperty("user.dir") + "/resources/magyarlanc/szeged_2_3.lex");
+        MagyarlancResourceHolder.initFrequencies(System.getProperty("user.dir") + "/resources/magyarlanc/szeged_2_3.freq");
+        MagyarlancResourceHolder.initRFSA(System.getProperty("user.dir") + "/resources/magyarlanc/rfsa.txt");
+        MagyarlancResourceHolder.initCorrDic(System.getProperty("user.dir") + "/resources/magyarlanc/corrdic.txt");
+        MagyarlancResourceHolder.initMorPhonDir();
+        MagyarlancResourceHolder.initMSDReducer();
+        MagyarlancResourceHolder.initKRToMSD();
+        props.put("pos.model", System.getProperty("user.dir") + "/resources/magyarlanc/szeged_2_3.model");
+      } else {
+        props.put("pos.model", DefaultPaths.DEFAULT_POS_MODEL);
+      }
+    }
+    // -->EXTENSION
+
     this.properties = props;
     AnnotatorPool pool = getDefaultAnnotatorPool(props);
 
@@ -302,7 +325,12 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
             options = "tokenizeNLs," + options;
           }
           // EXTENSION
-          return new PTBTokenizerAnnotator(false, options);
+          if (lang.equals("hu")) {
+            return new HunTokenizerAnnotator(false, options);
+          } else {
+            return new PTBTokenizerAnnotator(false, options);
+          }
+          // return new PTBTokenizerAnnotator(false, options);
           // -->EXTENSION
         }
       }
@@ -474,7 +502,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       public Annotator create() {
         try {
           // EXTENSION
-          return new POSTaggerAnnotator(inputProps.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL), inputProps);
+          return new OwnPOSTaggerAnnotator(inputProps.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL), inputProps);
+          // return new POSTaggerAnnotator(inputProps.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL), inputProps);
           // -->EXTENSION
         } catch (Exception e) {
           throw new RuntimeException(e);
@@ -497,7 +526,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
       @Override
       public Annotator create() {
-        return new MorphaAnnotator(false);
+        // return new MorphaAnnotator(false);
+        return new OwnMorphaAnnotator(false, lang.equals("en"));
       }
 
       @Override

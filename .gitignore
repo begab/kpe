@@ -2,7 +2,7 @@
 build/
 bin/
 lib/google-gson-2.2.4/
-lib/stanford-corenlp-full-2014-01-04/
+lib/stanford-corenlp-full-2014-06-16/
 .settings/
 models/*
 !models/GeneralReader

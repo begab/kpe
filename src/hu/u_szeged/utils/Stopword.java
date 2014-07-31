@@ -7,6 +7,7 @@ import java.util.Set;
 
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.SzTECoreNLP;
 
 public class Stopword implements Serializable {
 
@@ -19,7 +20,8 @@ public class Stopword implements Serializable {
     }
 
     stopwords = new HashSet<String>();
-    NLPUtils.readDocToCollection(System.getProperty("user.dir") + "/resources/stopwords/stopwords_en.txt", stopwords, Charset.forName("UTF-8"));
+    NLPUtils.readDocToCollection(System.getProperty("user.dir") + "/resources/stopwords/stopwords_" + SzTECoreNLP.lang + ".txt", stopwords,
+        Charset.forName("UTF-8"));
   }
 
   /**

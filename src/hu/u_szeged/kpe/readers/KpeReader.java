@@ -64,16 +64,17 @@ public abstract class KpeReader {
     return isSyntaxOn;
   }
 
-  public void initGrammar(boolean isMweFeatureOn, boolean isNeFeatureOn, boolean isSyntacticFeatureOn) {
+  public void initGrammar(boolean isMweFeatureOn, boolean isNeFeatureOn, boolean isSyntacticFeatureOn, String lang) {
     isMweOn = isMweFeatureOn;
     isNeOn = isNeFeatureOn;
     isSyntaxOn = isSyntacticFeatureOn;
     if (sentenceAnalyzer == null) {
 
       String annotators = "tokenize, ssplit, pos, lemma, stopword";
-      annotators += isMweFeatureOn ? ", mwe" : "";
-      annotators += isNeFeatureOn ? ", ner" : "";
-      annotators += isSyntacticFeatureOn ? ", parse" : "";
+      // the following annotators are optional and only available in English at the moment
+      annotators += isMweFeatureOn && lang.equals("en") ? ", mwe" : "";
+      annotators += isNeFeatureOn && lang.equals("en") ? ", ner" : "";
+      annotators += isSyntacticFeatureOn && lang.equals("en") ? ", parse" : "";
 
       Properties props = new Properties();
       props.put("annotators", annotators);
@@ -82,6 +83,7 @@ public abstract class KpeReader {
       props.put("ssplit.boundariesToDiscard", "*NL*");
       props.put("tokenize.options", "invertible,ptb3Escaping=true,tokenizeNLs");
       props.put("pos.maxlen", "100");
+      props.put("lang", lang);
 
       if (isMweFeatureOn) {
         props.put("mwe.file", System.getProperty("user.dir") + "/resources/wikiMWEfreqs.txt");

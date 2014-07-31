@@ -115,7 +115,7 @@ public class KpeMain {
    * @return returns the fact whether a new model is going to be trained
    */
 
-  public boolean setReaders(String trainingData, String testData, int foldNum, boolean[] goldAnn, int adaptation, boolean serialize) {
+  public boolean setReaders(String trainingData, String testData, int foldNum, boolean[] goldAnn, int adaptation, boolean serialize, String lang) {
     totalFolds = foldNum;
     Map<Boolean, List<String>> readerSettings = parseReaderSettings(trainingData, testData);
     for (Entry<Boolean, List<String>> entry : readerSettings.entrySet()) {
@@ -127,7 +127,7 @@ public class KpeMain {
         }
 
         KpeReader reader = Class.forName("hu.u_szeged.kpe.readers." + readerName).asSubclass(KpeReader.class).newInstance();
-        reader.initGrammar(mweFeatureIsOn, neFeatureIsOn, syntacticFeatureIsOn);
+        reader.initGrammar(mweFeatureIsOn, neFeatureIsOn, syntacticFeatureIsOn, lang);
         DocumentSet ds = new DocumentSet(adaptation, reader);
 
         reader.setUseGoldAnnotation(train ? goldAnn[0] : goldAnn[1]);
@@ -209,7 +209,7 @@ public class KpeMain {
 
   private static String[] processParamFile(String file) {
     String[] options = { "train", "test", "classifier", "featureEncoding", "numOfKeyphrases", "wordnet_dir", "posEndPrune", "stopWordPrune", "beisMarkup",
-        "serializeAnnotations" };
+        "serializeAnnotations", "language" };
     List<String> lines = new LinkedList<String>();
     NLPUtils.readDocToCollection(file, lines);
     String[] newArgs = new String[options.length];
@@ -244,7 +244,7 @@ public class KpeMain {
         "Feature encoding to use:", "Number of keyphrases to extract?",
         "Location of  WordNet dict directory (or type in 'FALSE' in case you do not wish to use it)?",
         "pos ending-based candidate phrase pruning _not_ to be used?", "stopword candidate phrase pruning _not_ to be used?",
-        "B(egin)I(nside)E(nd)S(ingle) feature markup?", "serialize grammar files?" };
+        "B(egin)I(nside)E(nd)S(ingle) feature markup?", "serialize grammar files?", "What is the language of the input data ('en' or 'hu')?" };
     args = Arrays.copyOf(args, params.length);
     for (int i = 0; i < args.length; ++i) {
       if (args[i] == null) {
@@ -273,6 +273,7 @@ public class KpeMain {
       employBIESmarkup[i] = Boolean.parseBoolean(beisSettings[i]);
     }
     boolean serializeGrammar = Boolean.parseBoolean(args[9]);
+    String lang = args[10].replaceAll("^[\\p{Punct}]+|[\\p{Punct}]+$", "").toLowerCase();
 
     // these are just dummy, burned-in values in order to neutralize experimental and/or not well-tested enough features temporarily
     boolean finalPrune = false;
@@ -285,7 +286,7 @@ public class KpeMain {
     int encodedFeatures = Integer.parseInt(featureCoding);
     KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, encodedFeatures, filtration, wordNetParameter);
     String trainParameters = args[0], testParameters = args[1];
-    boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation, serializeGrammar);
+    boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation, serializeGrammar, lang);
 
     String[] location = { locationPrefix, modelPrefix };
     for (int fold = 1; fold <= numOfFolds; ++fold) {
