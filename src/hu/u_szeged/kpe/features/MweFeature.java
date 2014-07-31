@@ -16,7 +16,8 @@ import edu.stanford.nlp.pipeline.MweDictAnnotator.MWEAnnotation;
 import edu.stanford.nlp.util.CoreMap;
 
 /**
- * This class makes use of a list, crawled from Wikipedia containing MWEs and identifies NGrams that can be mapped to any element of it.
+ * This class makes use of a list, crawled from Wikipedia containing MWEs and identifies NGrams that can be
+ * mapped to any element of it.
  */
 public class MweFeature extends Feature {
 

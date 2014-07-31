@@ -28,7 +28,8 @@ import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.nlp.util.Generics;
 
 /**
- * Calculates the average "distance" in the parse trees of a candidate phrase to the frequent verbs in the corpus.
+ * Calculates the average "distance" in the parse trees of a candidate phrase to the frequent verbs in the
+ * corpus.
  */
 public class IndicatingVerbsFeature extends NominalFeature {
 
@@ -67,8 +68,10 @@ public class IndicatingVerbsFeature extends NominalFeature {
           String word = cl.word();
           // replacing "www." serves the only dummy purpose of not to regard hyperlinks as strange-orthography
           // tokens
-          int difference = word.length() - word.replaceAll("(?i)www.", "????").replaceAll("(?i)([a-z])\\1{2,}", "$1").length();
-          // boolean strangeOrthography = containsEpinionated && difference > 0 && difference != word.length();
+          int difference = word.length()
+              - word.replaceAll("(?i)www.", "????").replaceAll("(?i)([a-z])\\1{2,}", "$1").length();
+          // boolean strangeOrthography = containsEpinionated && difference > 0 && difference !=
+          // word.length();
           boolean strangeOrthography = difference > 0 && difference != word.length();
           if (!strangeOrthography && !nominalVals.contains(cl)) {
             continue;
@@ -125,7 +128,7 @@ public class IndicatingVerbsFeature extends NominalFeature {
                 Set<Tree> nodes = depStruct.root().subTrees();
                 for (Iterator<Tree> it = nodes.iterator(); it.hasNext();) {
                   TreeGraphNode node = (TreeGraphNode) it.next();
-                  TreeGraphNode gov = GrammaticalStructure.getGovernor(node);
+                  TreeGraphNode gov = node.getGovernor();
                   if (gov != null && gov == next) {
                     newNodes.add(node);
                   }

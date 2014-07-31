@@ -48,8 +48,8 @@ public class PosFeature extends NominalFeature {
     for (int position = 0; position < ngramSize; ++position) {
       CoreLabel cl = ngramForm.getKey().get(position);
       String type = ngramSize == 1 ? "S" : (position == 0 ? "B" : (position < ngramSize - 1 ? "I" : "E"));
-      // String tag = cl.get(StopWordAnnotation.class) ? "MISC" : (SzTECoreNLP.lang == Language.HU ? cl.tag() :
-      // cl.tag().substring(0,
+      // String tag = cl.get(StopWordAnnotation.class) ? "MISC" : (SzTECoreNLP.lang == Language.HU ? cl.tag()
+      // : cl.tag().substring(0,
       String tag = cl.get(StopWordAnnotation.class) ? "MISC" : cl.tag().substring(0, Math.min(2, cl.tag().length()));
       if (employBIESmarkup) {
         updateFeatureVals(this.getClass().getName() + "_" + type + "_" + tag, occurrence, docToCheck);
@@ -66,8 +66,9 @@ public class PosFeature extends NominalFeature {
     double[] perDocFeatureVals = new double[docVals.size()];
     for (int doc = 0; doc < docVals.size(); ++doc) {
       List<Number> docNums = (ArrayList<Number>) docVals.get(doc);
-      if (docNums.size() > 0 && occurrences.get(doc) != 0)
+      if (docNums.size() > 0 && occurrences.get(doc) != 0) {
         perDocFeatureVals[doc] = docNums.get(docNums.size() - 1).doubleValue() / occurrences.get(doc);
+      }
     }
     return NLPUtils.mean(perDocFeatureVals);
   }

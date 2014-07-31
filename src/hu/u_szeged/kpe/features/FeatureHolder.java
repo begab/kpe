@@ -36,8 +36,8 @@ public class FeatureHolder extends ArrayList<Feature> {
   }
 
   public void updateDataHandler(double[] dedicatedFeats, String phrase, String instanceId, List<int[]> length,
-      List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<Map<Integer, List<CoreMap>>> grammars, DataHandler dataHandler, boolean train,
-      DocumentData... docs) {
+      List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<Map<Integer, List<CoreMap>>> grammars,
+      DataHandler dataHandler, boolean train, DocumentData... docs) {
 
     Feature.numberOfDocs = listOfHashs.size();
     double[] ngramAlternations = new double[listOfHashs.size()];
@@ -46,7 +46,8 @@ public class FeatureHolder extends ArrayList<Feature> {
       Map<Integer, List<CoreMap>> documentSentences = grammars.get(docToCheck);
       Map<String, Map<NGram, NGramStats>> docVocabulary = listOfHashs.get(docToCheck);
       Map<NGram, NGramStats> docPhrasesStats = docVocabulary.get(phrase);
-      // when keyphrasing multiple documents it is possible that one keyphrase aspirant is not present in some of the documents. Add some
+      // when keyphrasing multiple documents it is possible that one keyphrase aspirant is not present in some
+      // of the documents. Add some
       // dummy feature values in these cases.
       if (docPhrasesStats == null) {
         for (Feature f : this) {

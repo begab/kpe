@@ -263,7 +263,7 @@ public class KpeMain {
 
     String locationPrefix = args[1].replaceAll("->.*[\\/]?", "");
     String classifier = args[2];
-    String featureCoding = args[3];
+    String[] featureCodings = args[3].split(",");
     int numOfKeyphrases = Integer.parseInt(args[4]);
     String wordNetParameter = args[5];
     boolean[] filtration = { Boolean.parseBoolean(args[6]), Boolean.parseBoolean(args[7]) };
@@ -275,7 +275,8 @@ public class KpeMain {
     boolean serializeGrammar = Boolean.parseBoolean(args[9]);
     String lang = args[10].replaceAll("^[\\p{Punct}]+|[\\p{Punct}]+$", "").toLowerCase();
 
-    // these are just dummy, burned-in values in order to neutralize experimental and/or not well-tested enough features temporarily
+    // these are just dummy, burned-in values in order to neutralize experimental and/or not well-tested
+    // enough features temporarily
     boolean finalPrune = false;
     int numOfFolds = 1;
     boolean[] goldAnn = { true, true };
@@ -283,36 +284,38 @@ public class KpeMain {
     int adaptation = -1;
     double selectedFeatureRatio = 1.0d;
 
-    int encodedFeatures = Integer.parseInt(featureCoding);
-    KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, encodedFeatures, filtration, wordNetParameter);
-    String trainParameters = args[0], testParameters = args[1];
-    boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation, serializeGrammar, lang);
+    for (String featureCoding : featureCodings) {
+      int encodedFeatures = Integer.parseInt(featureCoding.trim());
+      KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, encodedFeatures, filtration, wordNetParameter);
+      String trainParameters = args[0], testParameters = args[1];
+      boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation, serializeGrammar, lang);
 
-    String[] location = { locationPrefix, modelPrefix };
-    for (int fold = 1; fold <= numOfFolds; ++fold) {
-      System.err.println("Fold #" + fold);
-      time = System.currentTimeMillis();
-      kpe.setFold(fold);
-      if (newModel) {
-        try {
-          kpe.createModel(classifier, useSynonyms[0], goldAnn[0], employBIESmarkup, 0.1d, selectedFeatureRatio, location, serializeGrammar);
-        } catch (Exception e) {
-          e.printStackTrace();
-          continue;
+      String[] location = { locationPrefix, modelPrefix };
+      for (int fold = 1; fold <= numOfFolds; ++fold) {
+        System.err.println("Fold #" + fold);
+        time = System.currentTimeMillis();
+        kpe.setFold(fold);
+        if (newModel) {
+          try {
+            kpe.createModel(classifier, useSynonyms[0], goldAnn[0], employBIESmarkup, 0.1d, selectedFeatureRatio, location, serializeGrammar);
+          } catch (Exception e) {
+            e.printStackTrace();
+            continue;
+          }
+          if (fold == 1) {
+            System.err.println(encodedFeatures);
+            System.err.println("Reader phrases " + (goldAnn[0] ? "" : "not ") + "used.");
+            System.err.println("WordNet is " + (wordNetParameter.equalsIgnoreCase("false") ? "not " : "") + "used.");
+            System.err.println("POS ending pruning is " + (kpe.getNoPosEndingPruning() ? "not " : "") + "used.");
+            System.err.println("Stopword pruning is " + (kpe.getNoStopWordPruning() ? "not " : "") + "used.");
+            System.err.println(args[1] + " will be keyphrased with a " + classifier + " classifier"
+                + (newModel ? " and a new " + numOfFolds + "-fold model is being created." : "."));
+          }
+          System.err.println("Model done: " + (System.currentTimeMillis() - time) / 1000.0 + " secs");
         }
-        if (fold == 1) {
-          System.err.println(encodedFeatures);
-          System.err.println("Reader phrases " + (goldAnn[0] ? "" : "not ") + "used.");
-          System.err.println("WordNet is " + (wordNetParameter.equalsIgnoreCase("false") ? "not " : "") + "used.");
-          System.err.println("POS ending pruning is " + (kpe.getNoPosEndingPruning() ? "not " : "") + "used.");
-          System.err.println("Stopword pruning is " + (kpe.getNoStopWordPruning() ? "not " : "") + "used.");
-          System.err.println(args[1] + " will be keyphrased with a " + classifier + " classifier"
-              + (newModel ? " and a new " + numOfFolds + "-fold model is being created." : "."));
-        }
-        System.err.println("Model done: " + (System.currentTimeMillis() - time) / 1000.0 + " secs");
+        kpe.extractKeyphrases(classifier, useSynonyms[0], goldAnn, employBIESmarkup, selectedFeatureRatio, location, serializeGrammar);
+        System.err.println((System.currentTimeMillis() - time) / 1000.0);
       }
-      kpe.extractKeyphrases(classifier, useSynonyms[0], goldAnn, employBIESmarkup, selectedFeatureRatio, location, serializeGrammar);
-      System.err.println((System.currentTimeMillis() - time) / 1000.0);
     }
   }
 }

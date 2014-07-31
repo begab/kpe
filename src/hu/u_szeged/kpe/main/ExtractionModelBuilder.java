@@ -107,8 +107,9 @@ public class ExtractionModelBuilder {
     m_MinPhraseLength = newMinPhraseLength;
   }
 
-  public String buildModel(int foldNum, int totalFolds, List<String> features, String classifier, double commonWordsThreshold, double selectedFeatureRatio,
-      boolean[] employBIESmarkup, DocumentSet targetDomainDocs, boolean noSWpruning, boolean noPOSpruning, boolean serialize) throws Exception {
+  public String buildModel(int foldNum, int totalFolds, List<String> features, String classifier,
+      double commonWordsThreshold, double selectedFeatureRatio, boolean[] employBIESmarkup,
+      DocumentSet targetDomainDocs, boolean noSWpruning, boolean noPOSpruning, boolean serialize) throws Exception {
     m_KPEFilter = new KPEFilter(noSWpruning, noPOSpruning);
     m_KPEFilter.setMaxPhraseLength(getMaxPhraseLength());
     m_KPEFilter.setMinPhraseLength(getMinPhraseLength());
@@ -138,7 +139,8 @@ public class ExtractionModelBuilder {
     }
 
     String log = buildClassifier(foldNum, documents, selectedFeatureRatio, serialize);
-    System.err.println("Classifier built of " + documents.size() + " documents in " + ((System.currentTimeMillis() - KpeMain.time) / 1000d) + " seconds.");
+    System.err.println("Classifier built of " + documents.size() + " documents in "
+        + ((System.currentTimeMillis() - KpeMain.time) / 1000d) + " seconds.");
     return log;
   }
 
@@ -176,7 +178,8 @@ public class ExtractionModelBuilder {
       }
     }
 
-    // for (Entry<String, Map<Double, Integer>> feats : m_KPEFilter.getFeatures().getFeatureValDistribution().entrySet()) {
+    // for (Entry<String, Map<Double, Integer>> feats :
+    // m_KPEFilter.getFeatures().getFeatureValDistribution().entrySet()) {
     // int i = 0, sum = 0;
     // if (feats.getKey().contains("TfIdf") && foldNum == 9) {
     // for (Entry<Double, Integer> v : feats.getValue().entrySet()) {
@@ -223,8 +226,9 @@ public class ExtractionModelBuilder {
         }
       }
 
-      log = instanceNum + " inst.\t" + positiveTrainingInstances + " pos + " + negativeTrainingInstances + " neg\t" + featureNum + " (" + dh.getFeatureCount()
-          + ") features\t" + dh.getFeatureNames().size() + " pruned features\t" + (System.currentTimeMillis() - KpeMain.time) / 1000.0d;
+      log = instanceNum + " inst.\t" + positiveTrainingInstances + " pos + " + negativeTrainingInstances + " neg\t"
+          + featureNum + " (" + dh.getFeatureCount() + ") features\t" + dh.getFeatureNames().size()
+          + " pruned features\t" + (System.currentTimeMillis() - KpeMain.time) / 1000.0d;
 
       Model learnedModel = dh.trainClassifier();
       m_KPEFilter.setModel(learnedModel);

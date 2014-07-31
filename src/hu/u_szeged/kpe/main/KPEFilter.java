@@ -46,7 +46,9 @@ public class KPEFilter implements Serializable {
   private int minPhraseLength = 1;
   /** The minimum number of occurrences of a phrase */
   private int minNumOccur = 1;
-  /** The dictionary containing the global corpus statistics of the keyphrase candidates */
+  /**
+   * The dictionary containing the global corpus statistics of the keyphrase candidates
+   */
   private Map<String, Integer[]> m_Dictionary;
   /** The number of documents in the global frequencies corpus */
   private int numDocs = 0;
@@ -60,15 +62,22 @@ public class KPEFilter implements Serializable {
   private Model learnedModel;
   /** The list of features */
   private FeatureHolder features;
-  /** Collection of interesting words collected for feature value calculation during the processing of documents */
+  /**
+   * Collection of interesting words collected for feature value calculation during the processing of
+   * documents
+   */
   private Map<CoreLabel, Integer> indicatorWords;
   /** Some sort of external knowledge storing Collection */
   public static Map<CoreLabel, List<double[]>> wordList;
   // /** Container that contains possible synonyms */
   // public static Map<CoreLabel, Set<String>> synsets;
-  /** Regexp matching only those POS codes that are welcomed in the current setting */
+  /**
+   * Regexp matching only those POS codes that are welcomed in the current setting
+   */
   private Pattern posRegexp;
-  /** Set of ngrams regarded as too commons thus as such ones that are not supposed to be built in the model */
+  /**
+   * Set of ngrams regarded as too commons thus as such ones that are not supposed to be built in the model
+   */
   private Set<String> commonNGrams = new HashSet<String>();
   /** Indicates if stopwords-based pruning of keyphrases is _not_ performed */
   private boolean noStopWordPruning;
@@ -219,10 +228,12 @@ public class KPEFilter implements Serializable {
     return learnedModel;
   }
 
-  public void setNumFeature(List<String> feature, String classifier, Map<String, Boolean> employBIESfeatureMarkup) throws Exception {
+  public void setNumFeature(List<String> feature, String classifier, Map<String, Boolean> employBIESfeatureMarkup)
+      throws Exception {
     posRegexp = Pattern.compile("(?i)nnp?s?|jj[rs]?|vb[dgnpz]?");
     features = new FeatureHolder(feature.size());
-    // no longer should it be necessary to involve the two basic KEA features into our feature set
+    // no longer should it be necessary to involve the two basic KEA features
+    // into our feature set
     // (esp. for the opinion phrase extraction)
     // features.add(new TfIdfFeature());
     // features.add(new FirstIndexFeature());
@@ -280,7 +291,8 @@ public class KPEFilter implements Serializable {
   // public void fillWordList(String file) {
   // if (wordList == null && new File(file + ".ser").exists()) {
   // try {
-  // wordList = (Map<CoreLabel, List<double[]>>) new ObjectInputStream(new BufferedInputStream(new FileInputStream(file + ".ser"))).readObject();
+  // wordList = (Map<CoreLabel, List<double[]>>) new ObjectInputStream(new
+  // BufferedInputStream(new FileInputStream(file + ".ser"))).readObject();
   // } catch (Exception e) {
   // System.err.println("Error in deserializing file " + file + ".ser");
   // e.printStackTrace();
@@ -292,31 +304,37 @@ public class KPEFilter implements Serializable {
   //
   // // try {
   // // if (acceptSynonyms && new File(file + "Synsets.ser").exists()) {
-  // // synsets = (Map<CoreLabel, Set<String>>) new ObjectInputStream(new BufferedInputStream(new
+  // // synsets = (Map<CoreLabel, Set<String>>) new ObjectInputStream(new
+  // BufferedInputStream(new
   // // FileInputStream(file + "Synsets.ser")))
   // // .readObject();
   // // }
   // // } catch (Exception e) {
-  // // System.err.println("Error in reading deserializing file " + file + "Synsets.ser");
+  // // System.err.println("Error in reading deserializing file " + file +
+  // "Synsets.ser");
   // // System.exit(1);
   // // }
   // }
 
   // private void doTheRest(String file) {
-  // wordList = new TreeMap<CoreLabel, List<double[]>>(new CoreLabelComparator());
-  // // synsets = new TreeMap<CoreLabel, Set<String>>(new CoreLabelComparator());
+  // wordList = new TreeMap<CoreLabel, List<double[]>>(new
+  // CoreLabelComparator());
+  // // synsets = new TreeMap<CoreLabel, Set<String>>(new
+  // CoreLabelComparator());
   // List<String> lines = new LinkedList<>();
   // NLPUtils.readDocToCollection(file, lines);
   // for (String line : lines) {
   // String[] parts = line.split("\t");
-  // double posValue = Double.parseDouble(parts[2]), negValue = Double.parseDouble(parts[3]);
+  // double posValue = Double.parseDouble(parts[2]), negValue =
+  // Double.parseDouble(parts[3]);
   // if ((posValue + negValue) == 0.0)
   // continue;
   // String[] tokens = parts[4].split(" ");
   // Set<String> tokensSet = new HashSet<String>();
   // Set<CoreLabel> coreLabelSet = new HashSet<CoreLabel>();
   // for (String token : tokens) {
-  // token = token.replaceAll("(#[a-z])?#\\d+", ""); // "(#[a-z])?" is for the different versions of SWN
+  // token = token.replaceAll("(#[a-z])?#\\d+", ""); // "(#[a-z])?" is for the
+  // different versions of SWN
   // String[] tokenParts = token.split("_");
   // if (tokenParts.length > 1)
   // continue;
@@ -345,16 +363,19 @@ public class KPEFilter implements Serializable {
     Map<String, Entry<Set<NGram>, Integer[]>> hash = getPhrasesForDict(keyNGrams, sections);
     for (Entry<String, Entry<Set<NGram>, Integer[]>> normalizedPhrase : hash.entrySet()) {
       Integer[] toUpdate = m_Dictionary.get(normalizedPhrase.getKey());
-      // Entry<Set<NGram>, Integer[]> toUpdate = m_Dictionary.get(normalizedPhrase.getKey());
+      // Entry<Set<NGram>, Integer[]> toUpdate =
+      // m_Dictionary.get(normalizedPhrase.getKey());
       if (toUpdate == null) {
         // Set<NGram> ngramVariations = new HashSet<NGram>();
-        // toUpdate = new SimpleEntry<Set<NGram>, Integer[]>(ngramVariations, new Integer[]{0, null, 0, 0});
+        // toUpdate = new SimpleEntry<Set<NGram>, Integer[]>(ngramVariations,
+        // new Integer[]{0, null, 0, 0});
         toUpdate = new Integer[] { null, null, 0, 0 };
       }
       for (int j = 0; j < normalizedPhrase.getValue().getValue().length; ++j) {
         if (normalizedPhrase.getValue().getValue()[j] != null) {
           toUpdate[j] = (toUpdate[j] != null ? toUpdate[j] : 0) + normalizedPhrase.getValue().getValue()[j];
-          // toUpdate.getValue()[j] = (toUpdate.getValue()[j] != null ? toUpdate.getValue()[j] : 0)
+          // toUpdate.getValue()[j] = (toUpdate.getValue()[j] != null ?
+          // toUpdate.getValue()[j] : 0)
           // + normalizedPhrase.getValue().getValue()[j];
         }
       }
@@ -365,18 +386,22 @@ public class KPEFilter implements Serializable {
 
   public void setCommonWords(double commonWordThreshold, int numOfDocs) {
     if (numOfDocs < 500) {
-      System.err.println("Note that no term frequency-based pruning will take place as there are less than 500 training documents.");
+      System.err
+          .println("Note that no term frequency-based pruning will take place as there are less than 500 training documents.");
       return;
     }
 
     for (Entry<String, Integer[]> normalizedForm : m_Dictionary.entrySet()) {
-      // for (Entry<String, Entry<Set<NGram>, Integer[]>> normalizedForm : m_Dictionary.entrySet()){
-      // if (normalizedForm.getValue().getValue()[0] > commonWordThreshold * numOfDocs){
+      // for (Entry<String, Entry<Set<NGram>, Integer[]>> normalizedForm :
+      // m_Dictionary.entrySet()){
+      // if (normalizedForm.getValue().getValue()[0] > commonWordThreshold *
+      // numOfDocs){
       Integer[] stats = normalizedForm.getValue();
       int nonKeyphraseOccurrance = (stats[1] == null ? 0 : stats[1]);
       if (nonKeyphraseOccurrance > commonWordThreshold * numOfDocs) {
         commonNGrams.add(normalizedForm.getKey());
-        System.err.println("Normalized form too common: " + normalizedForm + "\t" + nonKeyphraseOccurrance + " non-keyphrase occurrences.");
+        System.err.println("Normalized form too common: " + normalizedForm + "\t" + nonKeyphraseOccurrance
+            + " non-keyphrase occurrences.");
       }
     }
     System.err.println(commonNGrams.size() + "\t" + m_Dictionary.size());
@@ -386,7 +411,8 @@ public class KPEFilter implements Serializable {
    * Computes the feature values for a given phrase.
    */
   public double[] addFeats(boolean target, Entry<String, Map<NGram, NGramStats>> phraseForms, List<int[]> length,
-      List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<Map<Integer, List<CoreMap>>> grammars, DataHandler dh, boolean train, DocumentData... docs) {
+      List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<Map<Integer, List<CoreMap>>> grammars,
+      DataHandler dh, boolean train, DocumentData... docs) {
     Set<String> stemmedPhraseAlternations = new HashSet<String>();
     for (Entry<NGram, NGramStats> orthographicForm : phraseForms.getValue().entrySet()) {
       stemmedPhraseAlternations.add(orthographicForm.getKey().getStemmedStringFrom());
@@ -402,7 +428,8 @@ public class KPEFilter implements Serializable {
 
     String instanceId = (actualDocId.append(phraseForms.getKey()).toString()).replaceAll(" ", "_");
     // calculate feature values
-    features.updateDataHandler(dedicatedFeats, phraseForms.getKey(), instanceId, length, listOfHashs, grammars, dh, train, docs);
+    features.updateDataHandler(dedicatedFeats, phraseForms.getKey(), instanceId, length, listOfHashs, grammars, dh,
+        train, docs);
 
     Map<String, Integer> normalizedKeyphrases = new HashMap<String, Integer>();
     Map<String, Integer> stemKeyphrases = new HashMap<String, Integer>();
@@ -411,7 +438,8 @@ public class KPEFilter implements Serializable {
     for (DocumentData doc : docs) {
       for (Entry<NGram, Integer> keyphrase : doc.getKeyphrases().entrySet()) {
         Integer prevVal = normalizedKeyphrases.get(keyphrase.getKey().getCanonicalForm());
-        normalizedKeyphrases.put(keyphrase.getKey().getCanonicalForm(), (prevVal == null ? 0 : prevVal) + keyphrase.getValue());
+        normalizedKeyphrases.put(keyphrase.getKey().getCanonicalForm(),
+            (prevVal == null ? 0 : prevVal) + keyphrase.getValue());
 
         String stemmedForm = keyphrase.getKey().getStemmedStringFrom();
         prevVal = stemKeyphrases.get(stemmedForm);
@@ -461,18 +489,21 @@ public class KPEFilter implements Serializable {
   /**
    * Returns the keyphrase aspirants of a document ranked by their posterior probabilities.
    */
-  public List<ClassificationInstance> rankDocumentInstances(KpeReader r, List<int[]> lengths, boolean serialize, DocumentData... documents)
-      throws DataMiningException {
+  public List<ClassificationInstance> rankDocumentInstances(KpeReader r, List<int[]> lengths, boolean serialize,
+      DocumentData... documents) throws DataMiningException {
     DataHandler mdh = new MalletDataHandler();
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("useFeatureSet", m_Alphabets);
     mdh.createNewDataset(parameters);
 
     List<Map<Integer, List<CoreMap>>> grammars = new ArrayList<Map<Integer, List<CoreMap>>>(documents.length);
-    List<Map<String, Map<NGram, NGramStats>>> listOfHashs = new ArrayList<Map<String, Map<NGram, NGramStats>>>(documents.length);
+    List<Map<String, Map<NGram, NGramStats>>> listOfHashs = new ArrayList<Map<String, Map<NGram, NGramStats>>>(
+        documents.length);
     for (DocumentData doc : documents) {
-      // XXX as assumed this is just a dummy value here, ensuring that we do not throw away anything with respect that constraining
-      // at some point it might turn out that some value having some real effect would better suit here
+      // XXX as assumed this is just a dummy value here, ensuring that we do not
+      // throw away anything with respect that constraining
+      // at some point it might turn out that some value having some real effect
+      // would better suit here
       int maxSection = Integer.MAX_VALUE;
       Map<String, Map<NGram, NGramStats>> hash = new HashMap<String, Map<NGram, NGramStats>>();
       TreeMap<Integer, List<CoreMap>> sections = doc.getSections(r, serialize);
@@ -536,7 +567,8 @@ public class KPEFilter implements Serializable {
     instances = newInstances;
 
     // Compute rank of phrases. Check for subphrases that are ranked lower than
-    // superphrases and assign probability -1 and set the rank to Integer.MAX_VALUE
+    // superphrases and assign probability -1 and set the rank to
+    // Integer.MAX_VALUE
     int rank = 1;
     for (int i = 0; i < instances.size(); ++i) {
       // Short cut: if phrase very unlikely make rank very low and continue
@@ -547,13 +579,17 @@ public class KPEFilter implements Serializable {
         continue;
       }
 
-      // Otherwise look for super phrase starting with first phrase in list that has same
-      // probability, TFxIDF value, and distance as current phrase. We do this to catch all
-      // superphrases that have same probability, TFxIDF value and distance as current phrase.
+      // Otherwise look for super phrase starting with first phrase in list that
+      // has same
+      // probability, TFxIDF value, and distance as current phrase. We do this
+      // to catch all
+      // superphrases that have same probability, TFxIDF value and distance as
+      // current phrase.
       int startInd = i;
       while (startInd < vals.length) {
         ClassificationInstance inst = instances.get(startInd);
-        if ((inst.getTfIdf() != ci.getTfIdf()) || (inst.getProbability() != ci.getProbability()) || (inst.getFirstOccurr() != ci.getFirstOccurr())) {
+        if ((inst.getTfIdf() != ci.getTfIdf()) || (inst.getProbability() != ci.getProbability())
+            || (inst.getFirstOccurr() != ci.getFirstOccurr())) {
           break;
         }
         startInd++;
@@ -564,10 +600,11 @@ public class KPEFilter implements Serializable {
   }
 
   /**
-   * Returns a HashMap that is filled with the normalized n-grams occurring in the given document and the number of times it occurs in various
-   * situations.
+   * Returns a HashMap that is filled with the normalized n-grams occurring in the given document and the
+   * number of times it occurs in various situations.
    */
-  public Map<String, Entry<Set<NGram>, Integer[]>> getPhrasesForDict(Map<NGram, Integer> keyNGrams, Map<Integer, List<CoreMap>> sectionSentences) {
+  public Map<String, Entry<Set<NGram>, Integer[]>> getPhrasesForDict(Map<NGram, Integer> keyNGrams,
+      Map<Integer, List<CoreMap>> sectionSentences) {
     CoreLabel[] buffer = new CoreLabel[maxPhraseLength];
     Map<String, Entry<Set<NGram>, Integer[]>> hash = new HashMap<String, Entry<Set<NGram>, Integer[]>>();
     Map<String, Set<Integer>> ngramSections = new HashMap<String, Set<Integer>>();
@@ -587,7 +624,8 @@ public class KPEFilter implements Serializable {
         int numSeen = 0;
         for (CoreLabel word : sentence.get(TokensAnnotation.class)) {
           // TODO only to create dictionaries for profiling experiments
-          // if (tabuIndex != -1 && word.get(CharacterOffsetEndAnnotation.class) >= tabuIndex)
+          // if (tabuIndex != -1 && word.get(CharacterOffsetEndAnnotation.class)
+          // >= tabuIndex)
           // if (word.get(OriginalTextAnnotation.class).equals("Recommended:"))
           // break review;
           String wordForm = word.word();
@@ -636,7 +674,8 @@ public class KPEFilter implements Serializable {
               Set<NGram> ngramVariations = new HashSet<NGram>();
               ngramVariations.add(phraseBuffer);
               boolean properPhrase = keys.containsKey(canonicalForm);
-              prevValue = new SimpleEntry<Set<NGram>, Integer[]>(ngramVariations, new Integer[] { properPhrase ? 1 : null, properPhrase ? null : 1, 0, 1 });
+              prevValue = new SimpleEntry<Set<NGram>, Integer[]>(ngramVariations, new Integer[] {
+                  properPhrase ? 1 : null, properPhrase ? null : 1, 0, 1 });
             } else {
               prevValue.getValue()[3]++;
             }
@@ -652,14 +691,16 @@ public class KPEFilter implements Serializable {
     return hash;
   }
 
-  private static final Pattern REFERENCE_PATTERN = Pattern.compile("(R(eferences?|EFERENCES?)|B(ibiliography|IBLIOGRAPHY))");
+  private static final Pattern REFERENCE_PATTERN = Pattern
+      .compile("(R(eferences?|EFERENCES?)|B(ibiliography|IBLIOGRAPHY))");
 
   /**
-   * Fills in the HashMap with statistics of NGrams present in the document. Statistics stored in the Map: 0.) list of positions of the NGrams
-   * (List<Integer>)<br>
+   * Fills in the HashMap with statistics of NGrams present in the document. Statistics stored in the Map: 0.)
+   * list of positions of the NGrams (List<Integer>)<br>
    * - set of section numbers they are present (Set<Integer>)<br>
    * - number of times they are present in sentences with reference in it (Integer)<br>
-   * - list of parse trees (or if no parse tree is available, the list of POS sequences) of the containing sentences<br>
+   * - list of parse trees (or if no parse tree is available, the list of POS sequences) of the containing
+   * sentences<br>
    * - number of times they are included in section headings (Integer)
    * 
    * @param hash
@@ -668,7 +709,8 @@ public class KPEFilter implements Serializable {
    *          document to be investigated
    * @return total number of tokens and sections in the given document
    */
-  public int[] getPhrases(Map<String, Map<NGram, NGramStats>> hash, DocumentData document, int maxSection, TreeMap<Integer, List<CoreMap>> sections) {
+  public int[] getPhrases(Map<String, Map<NGram, NGramStats>> hash, DocumentData document, int maxSection,
+      TreeMap<Integer, List<CoreMap>> sections) {
     Map<String, int[]> acronymsMap = new HashMap<String, int[]>();
     CoreLabel[] buffer = new CoreLabel[maxPhraseLength];
     int pos = 1, lastSectionNumber = sections.lastKey(), referencePosition = Integer.MAX_VALUE;
@@ -679,13 +721,16 @@ public class KPEFilter implements Serializable {
       }
 
       for (CoreMap sentence : sectionSentences.getValue()) {
-        // if the line contains no lower case letters, it might indicate that it is a section header, so it seems
-        // to be a good idea not to regard anything occurring in it as an acronym, so rather continue
+        // if the line contains no lower case letters, it might indicate that it
+        // is a section header, so it seems
+        // to be a good idea not to regard anything occurring in it as an
+        // acronym, so rather continue
         boolean lookForAcronyms = !sentence.get(TextAnnotation.class).matches("[^a-z]+");
         boolean containsReference = document.containsReference(sentence);
         int numSeen = 0;
         for (CoreLabel word : sentence.get(TokensAnnotation.class)) {
-          // this condition was intended to be useful for the model creation for opinion holder profiling
+          // this condition was intended to be useful for the model creation for
+          // opinion holder profiling
           // experiments TODO so remove it A.S.A.P.
           // if (word.get(OriginalTextAnnotation.class).equals("Recommended:"))
           // break review;
@@ -725,7 +770,8 @@ public class KPEFilter implements Serializable {
             phraseBuffer = (NGram) phraseBuffer.clone();
             phraseBuffer.add(0, actWord);
 
-            // Don't consider phrases less than minimal length or beginning with a stop word
+            // Don't consider phrases less than minimal length or beginning with
+            // a stop word
             if (i < minPhraseLength || actWord.get(StopWordAnnotation.class)) {
               continue;
             }
@@ -736,10 +782,12 @@ public class KPEFilter implements Serializable {
             if (info != null) {
               info.updatePositions(pos + 1 - i);
               info.addSentence(new int[] { sectionSentences.getKey(), sentenceNumber });
-              info.updateContainsReference((!document.isScientific() || lastSectionNumber == 0 || sectionSentences.getKey() != lastSectionNumber)
-                  && containsReference);
-            } else if (!document.isScientific() || lastSectionNumber == 0 || sectionSentences.getKey() != lastSectionNumber) {
-              info = new NGramStats(pos + 1 - i, new int[] { sectionSentences.getKey(), sentenceNumber }, containsReference);
+              info.updateContainsReference((!document.isScientific() || lastSectionNumber == 0 || sectionSentences
+                  .getKey() != lastSectionNumber) && containsReference);
+            } else if (!document.isScientific() || lastSectionNumber == 0
+                || sectionSentences.getKey() != lastSectionNumber) {
+              info = new NGramStats(pos + 1 - i, new int[] { sectionSentences.getKey(), sentenceNumber },
+                  containsReference);
               orthologicalForms.put(phraseBuffer, info);
               hash.put(phraseBuffer.getCanonicalForm(), orthologicalForms);
             }
@@ -802,9 +850,11 @@ public class KPEFilter implements Serializable {
       boolean onlyInReferences = presentInRefs == totalOccurrences;
       boolean stopWordOk = noStopWordPruning || containsStopWord != totalOccurrences;
       boolean posOK = noPosEndingPruning || ((double) forbiddenPosEnding / totalOccurrences) < 0.5;
-      if (onlyInReferences || !posOK || !stopWordOk || normalizedNGram.length() < 3 || totalOccurrences < minNumOccur || containsNonAlphabetic) {
+      if (onlyInReferences || !posOK || !stopWordOk || normalizedNGram.length() < 3 || totalOccurrences < minNumOccur
+          || containsNonAlphabetic) {
         // if (onlyInReferences) {
-        // System.err.println("'" + normalizedNGram + "' present only in references.");
+        // System.err.println("'" + normalizedNGram +
+        // "' present only in references.");
         // }
         phrases.remove();
       }
