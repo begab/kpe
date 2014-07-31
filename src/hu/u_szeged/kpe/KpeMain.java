@@ -115,7 +115,8 @@ public class KpeMain {
    * @return returns the fact whether a new model is going to be trained
    */
 
-  public boolean setReaders(String trainingData, String testData, int foldNum, boolean[] goldAnn, int adaptation, boolean serialize) {
+  public boolean setReaders(String trainingData, String testData, int foldNum, boolean[] goldAnn, int adaptation,
+      boolean serialize) {
     totalFolds = foldNum;
     Map<Boolean, List<String>> readerSettings = parseReaderSettings(trainingData, testData);
     for (Entry<Boolean, List<String>> entry : readerSettings.entrySet()) {
@@ -126,7 +127,8 @@ public class KpeMain {
           continue;
         }
 
-        KpeReader reader = Class.forName("hu.u_szeged.kpe.readers." + readerName).asSubclass(KpeReader.class).newInstance();
+        KpeReader reader = Class.forName("hu.u_szeged.kpe.readers." + readerName).asSubclass(KpeReader.class)
+            .newInstance();
         reader.initGrammar(mweFeatureIsOn, neFeatureIsOn, syntacticFeatureIsOn);
         DocumentSet ds = new DocumentSet(adaptation, reader);
 
@@ -135,8 +137,9 @@ public class KpeMain {
           String path = entry.getValue().get(i);
           ds.setBaseDir(path);
           if (serialize) {
-            System.err.println("Note that (due to the config parameters) files containing serializations of grammatic analysis will be saved to location: "
-                + path + "grammar/");
+            System.err
+                .println("Note that (due to the config parameters) files containing serializations of grammatic analysis will be saved to location: "
+                    + path + "grammar/");
           }
           reader.addDirectoryOfFiles(path, train, ds);
         }
@@ -162,16 +165,17 @@ public class KpeMain {
     actualFold = fold;
   }
 
-  protected void createModel(String classifier, boolean synonyms, boolean goldAnn, boolean[] employBIESmarkup, double commonWords, double selectedFeatureRatio,
-      String[] loc, boolean serialize) throws Exception {
+  protected void createModel(String classifier, boolean synonyms, boolean goldAnn, boolean[] employBIESmarkup,
+      double commonWords, double selectedFeatureRatio, String[] loc, boolean serialize) throws Exception {
     String modelName = "models/" + loc[0] + "/" + (loc[1] != null ? loc[1] + "/" : "") + mode + "_"
-        + (selectedFeatureRatio < 1.0d ? "fs_" + selectedFeatureRatio + "_" : "") + (employBIESmarkup[0] ? "BIES_pos_" : "")
-        + (employBIESmarkup[1] ? "BIES_ne_" : "") + (employBIESmarkup[2] ? "BIES_suffix_" : "") + (wordNetUsage ? "wn_" : "")
-        + (noStopWordPruning ? "" : "sw_") + (noPosEndingPruning ? "" : "pos_") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
+        + (selectedFeatureRatio < 1.0d ? "fs_" + selectedFeatureRatio + "_" : "")
+        + (employBIESmarkup[0] ? "BIES_pos_" : "") + (employBIESmarkup[1] ? "BIES_ne_" : "")
+        + (employBIESmarkup[2] ? "BIES_suffix_" : "") + (wordNetUsage ? "wn_" : "") + (noStopWordPruning ? "" : "sw_")
+        + (noPosEndingPruning ? "" : "pos_") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
         + (totalFolds > 1 ? "fold" + actualFold + "_" : "") + goldAnn + ".model";
     System.err.println(modelName);
-    String log = km.buildModel(actualFold, totalFolds, selectedFeatures, classifier, commonWords, selectedFeatureRatio, employBIESmarkup, ke.getDocSet(),
-        noStopWordPruning, noPosEndingPruning, serialize);
+    String log = km.buildModel(actualFold, totalFolds, selectedFeatures, classifier, commonWords, selectedFeatureRatio,
+        employBIESmarkup, ke.getDocSet(), noStopWordPruning, noPosEndingPruning, serialize);
     KPEFilter kf = km.getKPEFilter();
     if (kf.getClassifierName().contains("MaxEnt")) {
       new File("models/" + loc[0]).mkdirs();
@@ -183,19 +187,22 @@ public class KpeMain {
     NLPUtils.serialize(km.getKPEFilter(), modelName);
   }
 
-  private void extractKeyphrases(String classifier, boolean synonyms, boolean[] goldAnn, boolean[] employBIESmarkup, double selectedFeatureRatio, String[] loc,
-      boolean serialize) {
+  private void extractKeyphrases(String classifier, boolean synonyms, boolean[] goldAnn, boolean[] employBIESmarkup,
+      double selectedFeatureRatio, String[] loc, boolean serialize) {
     String modelName = "models/" + loc[0] + "/" + (loc[1] != null ? loc[1] + "/" : "") + mode + "_"
-        + (selectedFeatureRatio < 1.0d ? "fs_" + selectedFeatureRatio + "_" : "") + (employBIESmarkup[0] ? "BIES_pos_" : "")
-        + (employBIESmarkup[1] ? "BIES_ne_" : "") + (employBIESmarkup[2] ? "BIES_suffix_" : "") + (wordNetUsage ? "wn_" : "")
-        + (noStopWordPruning ? "" : "sw_") + (noPosEndingPruning ? "" : "pos_") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
+        + (selectedFeatureRatio < 1.0d ? "fs_" + selectedFeatureRatio + "_" : "")
+        + (employBIESmarkup[0] ? "BIES_pos_" : "") + (employBIESmarkup[1] ? "BIES_ne_" : "")
+        + (employBIESmarkup[2] ? "BIES_suffix_" : "") + (wordNetUsage ? "wn_" : "") + (noStopWordPruning ? "" : "sw_")
+        + (noPosEndingPruning ? "" : "pos_") + (classifier.equals("MaxEntL1") ? "" : "_" + classifier)
         + (totalFolds > 1 ? "fold" + actualFold + "_" : "") + goldAnn[0] + ".model";
     try {
       if (!new File(modelName).exists()) {
-        System.err.println("The desired model (" + modelName + ") cannot be found on the computer, the config needs to be modified in order to generate it.");
+        System.err.println("The desired model (" + modelName
+            + ") cannot be found on the computer, the config needs to be modified in order to generate it.");
         System.exit(1);
       }
-      System.err.println("Extrcation of keyphrases begins. Output will be located at ./models/" + loc[0] + "/ directory.");
+      System.err.println("Extrcation of keyphrases begins. Output will be located at ./models/" + loc[0]
+          + "/ directory.");
       ke.loadModel(modelName);
       ke.extractKeyphrases(actualFold, totalFolds, modelName.replace(".model", "_" + goldAnn[1] + ".out"), serialize);
     } catch (Exception e) {
@@ -208,8 +215,8 @@ public class KpeMain {
   }
 
   private static String[] processParamFile(String file) {
-    String[] options = { "train", "test", "classifier", "featureEncoding", "numOfKeyphrases", "wordnet_dir", "posEndPrune", "stopWordPrune", "beisMarkup",
-        "serializeAnnotations" };
+    String[] options = { "train", "test", "classifier", "featureEncoding", "numOfKeyphrases", "wordnet_dir",
+        "posEndPrune", "stopWordPrune", "beisMarkup", "serializeAnnotations" };
     List<String> lines = new LinkedList<String>();
     NLPUtils.readDocToCollection(file, lines);
     String[] newArgs = new String[options.length];
@@ -240,11 +247,12 @@ public class KpeMain {
       System.err.println("Configuration read from config file: " + args[1]);
       args = processParamFile(args[1]);
     }
-    String[] params = { "Reader class and location(s) for training:", "Reader class and location(s) for testing:", "Classifier to use:",
-        "Feature encoding to use:", "Number of keyphrases to extract?",
+    String[] params = { "Reader class and location(s) for training:", "Reader class and location(s) for testing:",
+        "Classifier to use:", "Feature encoding to use:", "Number of keyphrases to extract?",
         "Location of  WordNet dict directory (or type in 'FALSE' in case you do not wish to use it)?",
-        "pos ending-based candidate phrase pruning _not_ to be used?", "stopword candidate phrase pruning _not_ to be used?",
-        "B(egin)I(nside)E(nd)S(ingle) feature markup?", "serialize grammar files?" };
+        "pos ending-based candidate phrase pruning _not_ to be used?",
+        "stopword candidate phrase pruning _not_ to be used?", "B(egin)I(nside)E(nd)S(ingle) feature markup?",
+        "serialize grammar files?" };
     args = Arrays.copyOf(args, params.length);
     for (int i = 0; i < args.length; ++i) {
       if (args[i] == null) {
@@ -263,7 +271,7 @@ public class KpeMain {
 
     String locationPrefix = args[1].replaceAll("->.*[\\/]?", "");
     String classifier = args[2];
-    String featureCoding = args[3];
+    String[] featureCodings = args[3].split(",");
     int numOfKeyphrases = Integer.parseInt(args[4]);
     String wordNetParameter = args[5];
     boolean[] filtration = { Boolean.parseBoolean(args[6]), Boolean.parseBoolean(args[7]) };
@@ -274,7 +282,8 @@ public class KpeMain {
     }
     boolean serializeGrammar = Boolean.parseBoolean(args[9]);
 
-    // these are just dummy, burned-in values in order to neutralize experimental and/or not well-tested enough features temporarily
+    // these are just dummy, burned-in values in order to neutralize experimental and/or not well-tested
+    // enough features temporarily
     boolean finalPrune = false;
     int numOfFolds = 1;
     boolean[] goldAnn = { true, true };
@@ -282,36 +291,41 @@ public class KpeMain {
     int adaptation = -1;
     double selectedFeatureRatio = 1.0d;
 
-    int encodedFeatures = Integer.parseInt(featureCoding);
-    KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, encodedFeatures, filtration, wordNetParameter);
-    String trainParameters = args[0], testParameters = args[1];
-    boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation, serializeGrammar);
+    for (String featureCoding : featureCodings) {
+      int encodedFeatures = Integer.parseInt(featureCoding.trim());
+      KpeMain kpe = new KpeMain(numOfKeyphrases, finalPrune, encodedFeatures, filtration, wordNetParameter);
+      String trainParameters = args[0], testParameters = args[1];
+      boolean newModel = kpe.setReaders(trainParameters, testParameters, numOfFolds, goldAnn, adaptation,
+          serializeGrammar);
 
-    String[] location = { locationPrefix, modelPrefix };
-    for (int fold = 1; fold <= numOfFolds; ++fold) {
-      System.err.println("Fold #" + fold);
-      time = System.currentTimeMillis();
-      kpe.setFold(fold);
-      if (newModel) {
-        try {
-          kpe.createModel(classifier, useSynonyms[0], goldAnn[0], employBIESmarkup, 0.1d, selectedFeatureRatio, location, serializeGrammar);
-        } catch (Exception e) {
-          e.printStackTrace();
-          continue;
+      String[] location = { locationPrefix, modelPrefix };
+      for (int fold = 1; fold <= numOfFolds; ++fold) {
+        System.err.println("Fold #" + fold);
+        time = System.currentTimeMillis();
+        kpe.setFold(fold);
+        if (newModel) {
+          try {
+            kpe.createModel(classifier, useSynonyms[0], goldAnn[0], employBIESmarkup, 0.1d, selectedFeatureRatio,
+                location, serializeGrammar);
+          } catch (Exception e) {
+            e.printStackTrace();
+            continue;
+          }
+          if (fold == 1) {
+            System.err.println(encodedFeatures);
+            System.err.println("Reader phrases " + (goldAnn[0] ? "" : "not ") + "used.");
+            System.err.println("WordNet is " + (wordNetParameter.equalsIgnoreCase("false") ? "not " : "") + "used.");
+            System.err.println("POS ending pruning is " + (kpe.getNoPosEndingPruning() ? "not " : "") + "used.");
+            System.err.println("Stopword pruning is " + (kpe.getNoStopWordPruning() ? "not " : "") + "used.");
+            System.err.println(args[1] + " will be keyphrased with a " + classifier + " classifier"
+                + (newModel ? " and a new " + numOfFolds + "-fold model is being created." : "."));
+          }
+          System.err.println("Model done: " + (System.currentTimeMillis() - time) / 1000.0 + " secs");
         }
-        if (fold == 1) {
-          System.err.println(encodedFeatures);
-          System.err.println("Reader phrases " + (goldAnn[0] ? "" : "not ") + "used.");
-          System.err.println("WordNet is " + (wordNetParameter.equalsIgnoreCase("false") ? "not " : "") + "used.");
-          System.err.println("POS ending pruning is " + (kpe.getNoPosEndingPruning() ? "not " : "") + "used.");
-          System.err.println("Stopword pruning is " + (kpe.getNoStopWordPruning() ? "not " : "") + "used.");
-          System.err.println(args[1] + " will be keyphrased with a " + classifier + " classifier"
-              + (newModel ? " and a new " + numOfFolds + "-fold model is being created." : "."));
-        }
-        System.err.println("Model done: " + (System.currentTimeMillis() - time) / 1000.0 + " secs");
+        kpe.extractKeyphrases(classifier, useSynonyms[0], goldAnn, employBIESmarkup, selectedFeatureRatio, location,
+            serializeGrammar);
+        System.err.println((System.currentTimeMillis() - time) / 1000.0);
       }
-      kpe.extractKeyphrases(classifier, useSynonyms[0], goldAnn, employBIESmarkup, selectedFeatureRatio, location, serializeGrammar);
-      System.err.println((System.currentTimeMillis() - time) / 1000.0);
     }
   }
 }

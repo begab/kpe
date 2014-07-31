@@ -34,8 +34,10 @@ public class WikiFeature extends Feature {
   /** */
   private static Map<String, Set<String>> categoryCache;
 
-  // TODO Q: Should the usage of categoryCache be limited somehow (e.g. by constraining it not to become extremely big) when there are lots of
-  // documents?? A: Probably, we shall return to this question after the first OutOfMemoryException happened.
+  // TODO Q: Should the usage of categoryCache be limited somehow (e.g. by
+  // constraining it not to become extremely big) when there are lots of
+  // documents?? A: Probably, we shall return to this question after the first
+  // OutOfMemoryException happened.
 
   public WikiFeature() {
     scale = Scale.BINARY;
@@ -61,7 +63,8 @@ public class WikiFeature extends Feature {
 
       List<Object> categories = ((List<Object>) WikiQuery.performQuery(articleName.toLowerCase(), QueryType.CATEGORY));
       // += 2 is used as every 2nd (even) Object is a count, while the odd indices stand for category names
-      for (int i = 0; i < categories.size() / 2; i += 2) {
+      // the very last entry is not needed, as it contains the sum of the counts
+      for (int i = 0; i < categories.size() - 1; i += 2) {
         String category = (String) categories.get(i);
         AbstractSequentialList<String> tokens = new LinkedList<String>();
         Matcher m = p.matcher(category);

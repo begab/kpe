@@ -14,12 +14,12 @@
     	<pathelement location="bin"/>
     	<pathelement location="lib/jaws-bin.jar"/>
     	<pathelement location="lib/google-gson-2.2.4/gson-2.2.4.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/ejml-0.23.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/joda-time.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/jollyday.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/stanford-corenlp-3.3.1-models.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/stanford-corenlp-3.3.1.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-01-04/xom.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-16/ejml-0.23.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-16/joda-time.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-16/jollyday.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-16/stanford-corenlp-3.4-models.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-16/stanford-corenlp-3.4.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-04/xom.jar"/>
     	<pathelement location="lib/mallet-deps.jar"/>
     	<pathelement location="lib/mallet.jar"/>
     </path>
