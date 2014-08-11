@@ -56,11 +56,13 @@ public class DocumentSet extends TreeSet<DocumentData> {
     if (otherData != null) {
       isGenuineDAon = !baseDir.equals(otherData.baseDir);
     }
-    double foldSize = (otherData != null && !baseDir.equals(otherData.baseDir) && adaptationType > -1 && forTraining ? otherData.size() : size())
+    double foldSize = (otherData != null && !baseDir.equals(otherData.baseDir) && adaptationType > -1 && forTraining ? otherData
+        .size() : size())
         * Math.pow(totalFolds, -1);
     List<DocumentData> docs = new ArrayList<DocumentData>(this);
-    if (totalFolds == 1)
+    if (totalFolds == 1) {
       return docs;
+    }
 
     int fromIndex = (int) Math.floor((foldNum - 1) * foldSize), toIndex;
     if (foldNum == totalFolds) {

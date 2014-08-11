@@ -4,10 +4,12 @@
 train=null->/home/berend/datasets/semeval5/train/
 test=GeneralReader->example_data
 classifier=MaxEntL1
-featureEncoding=1038
+featureEncoding=4122
 numOfKeyphrases=25
 wordnet_dir=false
 posEndPrune=true
 stopWordPrune=true
 beisMarkup=true,false,true
 serializeAnnotations=false
+numOfFolds=5
+language=en

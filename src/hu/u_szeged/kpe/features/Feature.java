@@ -39,7 +39,10 @@ public abstract class Feature implements Serializable {
 
   /** its value represents how many documents have been keyphrased (including the one in progress) **/
   protected int documentToExamine = -1;
-  /** dummy value is the one that is applied in those situations when a phrase was not present in a document at all **/
+  /**
+   * dummy value is the one that is applied in those situations when a phrase was not present in a document at
+   * all
+   **/
   protected double dummyValue = 0.0d;
   protected Class<?> collectionToStoreDocVals = ArrayList.class;
   protected Scale scale = null;
@@ -50,8 +53,9 @@ public abstract class Feature implements Serializable {
     binarizeNominals = needToBinarizeNominals;
   }
 
-  public abstract void value(String phrase, int[] length, Entry<NGram, NGramStats> ngramForm, boolean train, int docToCheck,
-      List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<CoreMap> sentences, DocumentData... docs);
+  public abstract void value(String phrase, int[] length, Entry<NGram, NGramStats> ngramForm, boolean train,
+      int docToCheck, List<Map<String, Map<NGram, NGramStats>>> listOfHashs, List<CoreMap> sentences,
+      DocumentData... docs);
 
   public void setFeatureField(KPEFilter kf) {
     dict = kf.getDictionary();
@@ -81,8 +85,9 @@ public abstract class Feature implements Serializable {
   }
 
   protected void updateFeatureVals(Number val, int docToCheck) {
-    if (val.intValue() != -1)
+    if (this instanceof SentiWordnetFeature || val.intValue() != -1) {
       updateFeatureVals(this.getClass().getName(), val, docToCheck, collectionToStoreDocVals);
+    }
   }
 
   protected void updateFeatureVals(String key, Number val, int docToCheck) {

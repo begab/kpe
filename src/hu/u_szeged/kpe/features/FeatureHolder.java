@@ -47,8 +47,7 @@ public class FeatureHolder extends ArrayList<Feature> {
       Map<String, Map<NGram, NGramStats>> docVocabulary = listOfHashs.get(docToCheck);
       Map<NGram, NGramStats> docPhrasesStats = docVocabulary.get(phrase);
       // when keyphrasing multiple documents it is possible that one keyphrase aspirant is not present in some
-      // of the documents. Add some
-      // dummy feature values in these cases.
+      // of the documents. Add some dummy feature values in these cases.
       if (docPhrasesStats == null) {
         for (Feature f : this) {
           f.updateFeatureVals(f.getDummyVal(), docToCheck);

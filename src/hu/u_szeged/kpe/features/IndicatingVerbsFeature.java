@@ -70,8 +70,7 @@ public class IndicatingVerbsFeature extends NominalFeature {
           // tokens
           int difference = word.length()
               - word.replaceAll("(?i)www.", "????").replaceAll("(?i)([a-z])\\1{2,}", "$1").length();
-          // boolean strangeOrthography = containsEpinionated && difference > 0 && difference !=
-          // word.length();
+          // boolean strangeOrthography = containsEpinionated && difference > 0 && difference !=word.length();
           boolean strangeOrthography = difference > 0 && difference != word.length();
           if (!strangeOrthography && !nominalVals.contains(cl)) {
             continue;
@@ -84,8 +83,9 @@ public class IndicatingVerbsFeature extends NominalFeature {
             int startIndex = leaves.indexOf(ancestorLeaves.get(0));
             int endIndex = startIndex + ancestorLeaves.size() - ngramForm.getKey().size();
             for (int i = startIndex; i <= endIndex; ++i) {
-              if (i >= checkedInterval[0] && i <= checkedInterval[1])
+              if (i >= checkedInterval[0] && i <= checkedInterval[1]) {
                 continue;
+              }
 
               List<CoreLabel> successiveTokens = sentenceTokens.subList(i, i + ngramForm.getKey().size());
               NGram dummyNGram = new NGram(successiveTokens);
@@ -95,8 +95,9 @@ public class IndicatingVerbsFeature extends NominalFeature {
               }
             }
             checkedInterval = new int[] { startIndex, endIndex };
-            if (!containsNGram)
+            if (!containsNGram) {
               continue;
+            }
 
             int depth = ancestor.depth();
             depth = h;

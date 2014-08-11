@@ -52,13 +52,15 @@ import edu.stanford.nlp.util.PropertiesUtils;
 import edu.stanford.nlp.util.ReflectionLoading;
 
 /**
- * This is a pipeline that takes in a string and returns various analyzed linguistic forms. The String is tokenized via a tokenizer (such as
- * PTBTokenizerAnnotator), and then other sequence model style annotation can be used to add things like lemmas, POS tags, and named entities. These
- * are returned as a list of CoreLabels. Other analysis components build and store parse trees, dependency graphs, etc.
+ * This is a pipeline that takes in a string and returns various analyzed linguistic forms. The String is
+ * tokenized via a tokenizer (such as PTBTokenizerAnnotator), and then other sequence model style annotation
+ * can be used to add things like lemmas, POS tags, and named entities. These are returned as a list of
+ * CoreLabels. Other analysis components build and store parse trees, dependency graphs, etc.
  * <p>
- * This class is designed to apply multiple Annotators to an Annotation. The idea is that you first build up the pipeline by adding Annotators, and
- * then you take the objects you wish to annotate and pass them in and get in return a fully annotated object. At the command-line level you can,
- * e.g., tokenize text with StanfordCoreNLP with a command like: <br/>
+ * This class is designed to apply multiple Annotators to an Annotation. The idea is that you first build up
+ * the pipeline by adding Annotators, and then you take the objects you wish to annotate and pass them in and
+ * get in return a fully annotated object. At the command-line level you can, e.g., tokenize text with
+ * StanfordCoreNLP with a command like: <br/>
  * 
  * <pre>
  * java edu.stanford.nlp.pipeline.StanfordCoreNLP -annotators tokenize,ssplit -file document.txt
@@ -69,8 +71,8 @@ import edu.stanford.nlp.util.ReflectionLoading;
  * <p>
  * The main entry point for the API is StanfordCoreNLP.process() .
  * <p>
- * <i>Implementation note:</i> There are other annotation pipelines, but they don't extend this one. Look for classes that implement Annotator and
- * which have "Pipeline" in their name.
+ * <i>Implementation note:</i> There are other annotation pipelines, but they don't extend this one. Look for
+ * classes that implement Annotator and which have "Pipeline" in their name.
  * 
  * @author Jenny Finkel
  * @author Anna Rafferty
@@ -103,7 +105,7 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
   private int numWords;
 
   /** Maintains the shared pool of annotators */
-  private static AnnotatorPool pool = null;
+  public static AnnotatorPool pool = null;
 
   private Properties properties;
 
@@ -115,8 +117,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
   }
 
   /**
-   * Construct a basic pipeline. The Properties will be used to determine which annotators to create, and a default AnnotatorPool will be used to
-   * create the annotators.
+   * Construct a basic pipeline. The Properties will be used to determine which annotators to create, and a
+   * default AnnotatorPool will be used to create the annotators.
    * 
    */
   public SzTECoreNLP(Properties props) {
@@ -139,7 +141,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
   public SzTECoreNLP(String propsFileNamePrefix, boolean enforceRequirements) {
     Properties props = loadProperties(propsFileNamePrefix);
     if (props == null) {
-      throw new RuntimeIOException("ERROR: cannot find properties file \"" + propsFileNamePrefix + "\" in the classpath!");
+      throw new RuntimeIOException("ERROR: cannot find properties file \"" + propsFileNamePrefix
+          + "\" in the classpath!");
     }
     construct(props, enforceRequirements);
   }
@@ -224,8 +227,10 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       // if undefined, find the properties file in the classpath
       props = loadPropertiesFromClasspath();
     } else if (props.getProperty("annotators") == null) {
-      // this happens when some command line options are specified (e.g just "-filelist") but no properties file is.
-      // we use the options that are given and let them override the default properties from the class path properties.
+      // this happens when some command line options are specified (e.g just "-filelist") but no properties
+      // file is.
+      // we use the options that are given and let them override the default properties from the class path
+      // properties.
       Properties fromClassPath = loadPropertiesFromClasspath();
       fromClassPath.putAll(props);
       props = fromClassPath;
@@ -237,7 +242,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
     if (!props.containsKey("pos.model")) {
       if (lang.equals("hu")) {
         MagyarlancResourceHolder.initCorpus(System.getProperty("user.dir") + "/resources/magyarlanc/szeged_2_3.lex");
-        MagyarlancResourceHolder.initFrequencies(System.getProperty("user.dir") + "/resources/magyarlanc/szeged_2_3.freq");
+        MagyarlancResourceHolder.initFrequencies(System.getProperty("user.dir")
+            + "/resources/magyarlanc/szeged_2_3.freq");
         MagyarlancResourceHolder.initRFSA(System.getProperty("user.dir") + "/resources/magyarlanc/rfsa.txt");
         MagyarlancResourceHolder.initCorrDic(System.getProperty("user.dir") + "/resources/magyarlanc/corrdic.txt");
         MagyarlancResourceHolder.initMorPhonDir();
@@ -288,7 +294,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
   }
 
   /**
-   * Call this if you are no longer using StanfordCoreNLP and want to release the memory associated with the annotators.
+   * Call this if you are no longer using StanfordCoreNLP and want to release the memory associated with the
+   * annotators.
    */
   public static synchronized void clearAnnotatorPool() {
     pool = null;
@@ -341,12 +348,16 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
         StringBuilder os = new StringBuilder();
         os.append("tokenize.whitespace:" + properties.getProperty("tokenize.whitespace", "false"));
         if (Boolean.valueOf(properties.getProperty("tokenize.whitespace", "false"))) {
-          os.append(WhitespaceTokenizerAnnotator.EOL_PROPERTY + ":" + properties.getProperty(WhitespaceTokenizerAnnotator.EOL_PROPERTY, "false"));
-          os.append(StanfordCoreNLP.NEWLINE_SPLITTER_PROPERTY + ":" + properties.getProperty(StanfordCoreNLP.NEWLINE_SPLITTER_PROPERTY, "false"));
+          os.append(WhitespaceTokenizerAnnotator.EOL_PROPERTY + ":"
+              + properties.getProperty(WhitespaceTokenizerAnnotator.EOL_PROPERTY, "false"));
+          os.append(StanfordCoreNLP.NEWLINE_SPLITTER_PROPERTY + ":"
+              + properties.getProperty(StanfordCoreNLP.NEWLINE_SPLITTER_PROPERTY, "false"));
           return os.toString();
         } else {
-          os.append(NEWLINE_SPLITTER_PROPERTY + ":" + Boolean.valueOf(properties.getProperty(NEWLINE_SPLITTER_PROPERTY, "false")));
-          os.append(NEWLINE_IS_SENTENCE_BREAK_PROPERTY + ":" + properties.getProperty(NEWLINE_IS_SENTENCE_BREAK_PROPERTY, DEFAULT_NEWLINE_IS_SENTENCE_BREAK));
+          os.append(NEWLINE_SPLITTER_PROPERTY + ":"
+              + Boolean.valueOf(properties.getProperty(NEWLINE_SPLITTER_PROPERTY, "false")));
+          os.append(NEWLINE_IS_SENTENCE_BREAK_PROPERTY + ":"
+              + properties.getProperty(NEWLINE_IS_SENTENCE_BREAK_PROPERTY, DEFAULT_NEWLINE_IS_SENTENCE_BREAK));
         }
         return os.toString();
       }
@@ -358,51 +369,74 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       @Override
       public Annotator create() {
         String xmlTags = properties.getProperty("clean.xmltags", CleanXmlAnnotator.DEFAULT_XML_TAGS);
-        String sentenceEndingTags = properties.getProperty("clean.sentenceendingtags", CleanXmlAnnotator.DEFAULT_SENTENCE_ENDERS);
-        String singleSentenceTags = properties.getProperty("clean.singlesentencetags", CleanXmlAnnotator.DEFAULT_SINGLE_SENTENCE_TAGS);
-        String allowFlawedString = properties.getProperty("clean.allowflawedxml");
-        boolean allowFlawed = CleanXmlAnnotator.DEFAULT_ALLOW_FLAWS;
-        if (allowFlawedString != null)
-          allowFlawed = Boolean.valueOf(allowFlawedString);
+        String sentenceEndingTags = properties.getProperty("clean.sentenceendingtags",
+            CleanXmlAnnotator.DEFAULT_SENTENCE_ENDERS);
+        // String singleSentenceTags = properties.getProperty("clean.singlesentencetags",
+        // CleanXmlAnnotator.DEFAULT_SINGLE_SENTENCE_TAGS);
+        // String allowFlawedString = properties.getProperty("clean.allowflawedxml");
+        // boolean allowFlawed = CleanXmlAnnotator.DEFAULT_ALLOW_FLAWS;
+        // if (allowFlawedString != null)
+        // allowFlawed = Boolean.valueOf(allowFlawedString);
         String dateTags = properties.getProperty("clean.datetags", CleanXmlAnnotator.DEFAULT_DATE_TAGS);
-        String docIdTags = properties.getProperty("clean.docIdtags", CleanXmlAnnotator.DEFAULT_DOCID_TAGS);
-        String docTypeTags = properties.getProperty("clean.docTypetags", CleanXmlAnnotator.DEFAULT_DOCTYPE_TAGS);
-        String utteranceTurnTags = properties.getProperty("clean.turntags", CleanXmlAnnotator.DEFAULT_UTTERANCE_TURN_TAGS);
-        String speakerTags = properties.getProperty("clean.speakertags", CleanXmlAnnotator.DEFAULT_SPEAKER_TAGS);
-        String docAnnotations = properties.getProperty("clean.docAnnotations", CleanXmlAnnotator.DEFAULT_DOC_ANNOTATIONS_PATTERNS);
-        String tokenAnnotations = properties.getProperty("clean.tokenAnnotations", CleanXmlAnnotator.DEFAULT_TOKEN_ANNOTATIONS_PATTERNS);
-        String sectionTags = properties.getProperty("clean.sectiontags", CleanXmlAnnotator.DEFAULT_SECTION_TAGS);
-        String sectionAnnotations = properties.getProperty("clean.sectionAnnotations", CleanXmlAnnotator.DEFAULT_SECTION_ANNOTATIONS_PATTERNS);
-        String ssplitDiscardTokens = properties.getProperty("clean.ssplitDiscardTokens");
-        CleanXmlAnnotator annotator = new CleanXmlAnnotator(xmlTags, sentenceEndingTags, dateTags, allowFlawed);
-        annotator.setSingleSentenceTagMatcher(singleSentenceTags);
-        annotator.setDocIdTagMatcher(docIdTags);
-        annotator.setDocTypeTagMatcher(docTypeTags);
-        annotator.setDiscourseTags(utteranceTurnTags, speakerTags);
-        annotator.setDocAnnotationPatterns(docAnnotations);
-        annotator.setTokenAnnotationPatterns(tokenAnnotations);
-        annotator.setSectionTagMatcher(sectionTags);
-        annotator.setSectionAnnotationPatterns(sectionAnnotations);
-        annotator.setSsplitDiscardTokensMatcher(ssplitDiscardTokens);
+        // String docIdTags = properties.getProperty("clean.docIdtags", CleanXmlAnnotator.DEFAULT_DOCID_TAGS);
+        // String docTypeTags = properties.getProperty("clean.docTypetags",
+        // CleanXmlAnnotator.DEFAULT_DOCTYPE_TAGS);
+        // String utteranceTurnTags = properties.getProperty("clean.turntags",
+        // CleanXmlAnnotator.DEFAULT_UTTERANCE_TURN_TAGS);
+        // String speakerTags = properties.getProperty("clean.speakertags",
+        // CleanXmlAnnotator.DEFAULT_SPEAKER_TAGS);
+        // String docAnnotations = properties.getProperty("clean.docAnnotations",
+        // CleanXmlAnnotator.DEFAULT_DOC_ANNOTATIONS_PATTERNS);
+        // String tokenAnnotations = properties.getProperty("clean.tokenAnnotations",
+        // CleanXmlAnnotator.DEFAULT_TOKEN_ANNOTATIONS_PATTERNS);
+        // String sectionTags = properties.getProperty("clean.sectiontags",
+        // CleanXmlAnnotator.DEFAULT_SECTION_TAGS);
+        // String sectionAnnotations = properties.getProperty("clean.sectionAnnotations",
+        // CleanXmlAnnotator.DEFAULT_SECTION_ANNOTATIONS_PATTERNS);
+        // String ssplitDiscardTokens = properties.getProperty("clean.ssplitDiscardTokens");
+        MyCleanXmlAnnotator annotator = new MyCleanXmlAnnotator(xmlTags, sentenceEndingTags, dateTags);
+        // annotator.setSingleSentenceTagMatcher(singleSentenceTags);
+        // annotator.setDocIdTagMatcher(docIdTags);
+        // annotator.setDocTypeTagMatcher(docTypeTags);
+        // annotator.setDiscourseTags(utteranceTurnTags, speakerTags);
+        // annotator.setDocAnnotationPatterns(docAnnotations);
+        // annotator.setTokenAnnotationPatterns(tokenAnnotations);
+        // annotator.setSectionTagMatcher(sectionTags);
+        // annotator.setSectionAnnotationPatterns(sectionAnnotations);
+        // annotator.setSsplitDiscardTokensMatcher(ssplitDiscardTokens);
         return annotator;
       }
 
       @Override
       public String signature() {
         // keep track of all relevant properties for this annotator here!
-        return "clean.xmltags:" + properties.getProperty("clean.xmltags", CleanXmlAnnotator.DEFAULT_XML_TAGS) + "clean.sentenceendingtags:"
-            + properties.getProperty("clean.sentenceendingtags", CleanXmlAnnotator.DEFAULT_SENTENCE_ENDERS) + "clean.sentenceendingtags:"
-            + properties.getProperty("clean.singlesentencetags", CleanXmlAnnotator.DEFAULT_SINGLE_SENTENCE_TAGS) + "clean.allowflawedxml:"
-            + properties.getProperty("clean.allowflawedxml", "") + "clean.datetags:"
-            + properties.getProperty("clean.datetags", CleanXmlAnnotator.DEFAULT_DATE_TAGS) + "clean.docidtags:"
-            + properties.getProperty("clean.docid", CleanXmlAnnotator.DEFAULT_DOCID_TAGS) + "clean.doctypetags:"
-            + properties.getProperty("clean.doctype", CleanXmlAnnotator.DEFAULT_DOCTYPE_TAGS) + "clean.turntags:"
-            + properties.getProperty("clean.turntags", CleanXmlAnnotator.DEFAULT_UTTERANCE_TURN_TAGS) + "clean.speakertags:"
-            + properties.getProperty("clean.speakertags", CleanXmlAnnotator.DEFAULT_SPEAKER_TAGS) + "clean.docAnnotations:"
-            + properties.getProperty("clean.docAnnotations", CleanXmlAnnotator.DEFAULT_DOC_ANNOTATIONS_PATTERNS) + "clean.tokenAnnotations:"
-            + properties.getProperty("clean.tokenAnnotations", CleanXmlAnnotator.DEFAULT_TOKEN_ANNOTATIONS_PATTERNS) + "clean.sectiontags:"
-            + properties.getProperty("clean.sectiontags", CleanXmlAnnotator.DEFAULT_SECTION_TAGS) + "clean.sectionAnnotations:"
-            + properties.getProperty("clean.sectionAnnotations", CleanXmlAnnotator.DEFAULT_SECTION_ANNOTATIONS_PATTERNS);
+        return "clean.xmltags:"
+            + properties.getProperty("clean.xmltags", CleanXmlAnnotator.DEFAULT_XML_TAGS)
+            + "clean.sentenceendingtags:"
+            + properties.getProperty("clean.sentenceendingtags", CleanXmlAnnotator.DEFAULT_SENTENCE_ENDERS)
+            + "clean.sentenceendingtags:"
+            + properties.getProperty("clean.singlesentencetags", CleanXmlAnnotator.DEFAULT_SINGLE_SENTENCE_TAGS)
+            + "clean.allowflawedxml:"
+            + properties.getProperty("clean.allowflawedxml", "")
+            + "clean.datetags:"
+            + properties.getProperty("clean.datetags", CleanXmlAnnotator.DEFAULT_DATE_TAGS)
+            + "clean.docidtags:"
+            + properties.getProperty("clean.docid", CleanXmlAnnotator.DEFAULT_DOCID_TAGS)
+            + "clean.doctypetags:"
+            + properties.getProperty("clean.doctype", CleanXmlAnnotator.DEFAULT_DOCTYPE_TAGS)
+            + "clean.turntags:"
+            + properties.getProperty("clean.turntags", CleanXmlAnnotator.DEFAULT_UTTERANCE_TURN_TAGS)
+            + "clean.speakertags:"
+            + properties.getProperty("clean.speakertags", CleanXmlAnnotator.DEFAULT_SPEAKER_TAGS)
+            + "clean.docAnnotations:"
+            + properties.getProperty("clean.docAnnotations", CleanXmlAnnotator.DEFAULT_DOC_ANNOTATIONS_PATTERNS)
+            + "clean.tokenAnnotations:"
+            + properties.getProperty("clean.tokenAnnotations", CleanXmlAnnotator.DEFAULT_TOKEN_ANNOTATIONS_PATTERNS)
+            + "clean.sectiontags:"
+            + properties.getProperty("clean.sectiontags", CleanXmlAnnotator.DEFAULT_SECTION_TAGS)
+            + "clean.sectionAnnotations:"
+            + properties
+                .getProperty("clean.sectionAnnotations", CleanXmlAnnotator.DEFAULT_SECTION_ANNOTATIONS_PATTERNS);
       }
     });
 
@@ -432,7 +466,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
           }
 
         } else {
-          // Treat as one sentence: You get a no-op sentence splitter that always returns all tokens as one sentence.
+          // Treat as one sentence: You get a no-op sentence splitter that always returns all tokens as one
+          // sentence.
           String isOneSentence = properties.getProperty("ssplit.isOneSentence");
           if (Boolean.parseBoolean(isOneSentence)) { // this method treats null as false
             return WordsToSentencesAnnotator.nonSplitter(false);
@@ -467,8 +502,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
           }
           String nlsb = properties.getProperty(NEWLINE_IS_SENTENCE_BREAK_PROPERTY, DEFAULT_NEWLINE_IS_SENTENCE_BREAK);
 
-          return new WordsToSentencesAnnotator(false, boundaryTokenRegex, boundariesToDiscard, htmlElementsToDiscard, nlsb, boundaryMultiTokenRegex,
-              tokenRegexesToDiscard);
+          return new WordsToSentencesAnnotator(false, boundaryTokenRegex, boundariesToDiscard, htmlElementsToDiscard,
+              nlsb, boundaryMultiTokenRegex, tokenRegexesToDiscard);
         }
       }
 
@@ -485,7 +520,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
             os.append("ssplit.boundaryTokenRegex:" + properties.getProperty("ssplit.boundaryTokenRegex", ""));
             os.append("ssplit.boundariesToDiscard:" + properties.getProperty("ssplit.boundariesToDiscard", ""));
             os.append("ssplit.htmlBoundariesToDiscard:" + properties.getProperty("ssplit.htmlBoundariesToDiscard", ""));
-            os.append(NEWLINE_IS_SENTENCE_BREAK_PROPERTY + ":" + properties.getProperty(NEWLINE_IS_SENTENCE_BREAK_PROPERTY, DEFAULT_NEWLINE_IS_SENTENCE_BREAK));
+            os.append(NEWLINE_IS_SENTENCE_BREAK_PROPERTY + ":"
+                + properties.getProperty(NEWLINE_IS_SENTENCE_BREAK_PROPERTY, DEFAULT_NEWLINE_IS_SENTENCE_BREAK));
           }
         }
         return os.toString();
@@ -502,8 +538,10 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       public Annotator create() {
         try {
           // EXTENSION
-          return new OwnPOSTaggerAnnotator(inputProps.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL), inputProps);
-          // return new POSTaggerAnnotator(inputProps.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL), inputProps);
+          return new OwnPOSTaggerAnnotator(inputProps.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL),
+              inputProps);
+          // return new POSTaggerAnnotator(inputProps.getProperty("pos.model",
+          // DefaultPaths.DEFAULT_POS_MODEL), inputProps);
           // -->EXTENSION
         } catch (Exception e) {
           throw new RuntimeException(e);
@@ -513,8 +551,9 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       @Override
       public String signature() {
         // keep track of all relevant properties for this annotator here!
-        return ("pos.maxlen:" + properties.getProperty("pos.maxlen", "") + "pos.model:" + properties.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL)
-            + "pos.nthreads:" + properties.getProperty("pos.nthreads", properties.getProperty("nthreads", "")));
+        return ("pos.maxlen:" + properties.getProperty("pos.maxlen", "") + "pos.model:"
+            + properties.getProperty("pos.model", DefaultPaths.DEFAULT_POS_MODEL) + "pos.nthreads:" + properties
+            .getProperty("pos.nthreads", properties.getProperty("nthreads", "")));
       }
     });
 
@@ -549,7 +588,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
         List<String> models = new ArrayList<String>();
         String modelNames = properties.getProperty("ner.model");
         if (modelNames == null) {
-          modelNames = DefaultPaths.DEFAULT_NER_THREECLASS_MODEL + "," + DefaultPaths.DEFAULT_NER_MUC_MODEL + "," + DefaultPaths.DEFAULT_NER_CONLL_MODEL;
+          modelNames = DefaultPaths.DEFAULT_NER_THREECLASS_MODEL + "," + DefaultPaths.DEFAULT_NER_MUC_MODEL + ","
+              + DefaultPaths.DEFAULT_NER_CONLL_MODEL;
         }
         if (modelNames.length() > 0) {
           models.addAll(Arrays.asList(modelNames.split(",")));
@@ -561,10 +601,13 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
         }
         NERClassifierCombiner nerCombiner;
         try {
-          boolean applyNumericClassifiers = PropertiesUtils.getBool(properties, NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_PROPERTY,
+          boolean applyNumericClassifiers = PropertiesUtils.getBool(properties,
+              NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_PROPERTY,
               NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT);
-          boolean useSUTime = PropertiesUtils.getBool(properties, NumberSequenceClassifier.USE_SUTIME_PROPERTY, NumberSequenceClassifier.USE_SUTIME_DEFAULT);
-          nerCombiner = new NERClassifierCombiner(applyNumericClassifiers, useSUTime, properties, models.toArray(new String[models.size()]));
+          boolean useSUTime = PropertiesUtils.getBool(properties, NumberSequenceClassifier.USE_SUTIME_PROPERTY,
+              NumberSequenceClassifier.USE_SUTIME_DEFAULT);
+          nerCombiner = new NERClassifierCombiner(applyNumericClassifiers, useSUTime, properties, models
+              .toArray(new String[models.size()]));
         } catch (FileNotFoundException e) {
           throw new RuntimeIOException(e);
         }
@@ -585,8 +628,11 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
             + NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_PROPERTY
             + ":"
             + properties.getProperty(NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_PROPERTY,
-                Boolean.toString(NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT)) + NumberSequenceClassifier.USE_SUTIME_PROPERTY + ":"
-            + properties.getProperty(NumberSequenceClassifier.USE_SUTIME_PROPERTY, Boolean.toString(NumberSequenceClassifier.USE_SUTIME_DEFAULT));
+                Boolean.toString(NERClassifierCombiner.APPLY_NUMERIC_CLASSIFIERS_DEFAULT))
+            + NumberSequenceClassifier.USE_SUTIME_PROPERTY
+            + ":"
+            + properties.getProperty(NumberSequenceClassifier.USE_SUTIME_PROPERTY,
+                Boolean.toString(NumberSequenceClassifier.USE_SUTIME_DEFAULT));
       }
     });
 
@@ -616,13 +662,15 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
       @Override
       public Annotator create() {
-        return new GenderAnnotator(false, properties.getProperty("gender.firstnames", DefaultPaths.DEFAULT_GENDER_FIRST_NAMES));
+        return new GenderAnnotator(false, properties.getProperty("gender.firstnames",
+            DefaultPaths.DEFAULT_GENDER_FIRST_NAMES));
       }
 
       @Override
       public String signature() {
         // keep track of all relevant properties for this annotator here!
-        return "gender.firstnames:" + properties.getProperty("gender.firstnames", DefaultPaths.DEFAULT_GENDER_FIRST_NAMES);
+        return "gender.firstnames:"
+            + properties.getProperty("gender.firstnames", DefaultPaths.DEFAULT_GENDER_FIRST_NAMES);
       }
     });
 
@@ -636,15 +684,17 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       public Annotator create() {
         String model = properties.getProperty("truecase.model", DefaultPaths.DEFAULT_TRUECASE_MODEL);
         String bias = properties.getProperty("truecase.bias", TrueCaseAnnotator.DEFAULT_MODEL_BIAS);
-        String mixed = properties.getProperty("truecase.mixedcasefile", DefaultPaths.DEFAULT_TRUECASE_DISAMBIGUATION_LIST);
+        String mixed = properties.getProperty("truecase.mixedcasefile",
+            DefaultPaths.DEFAULT_TRUECASE_DISAMBIGUATION_LIST);
         return new TrueCaseAnnotator(model, bias, mixed, false);
       }
 
       @Override
       public String signature() {
         // keep track of all relevant properties for this annotator here!
-        return "truecase.model:" + properties.getProperty("truecase.model", DefaultPaths.DEFAULT_TRUECASE_MODEL) + "truecase.bias:"
-            + properties.getProperty("truecase.bias", TrueCaseAnnotator.DEFAULT_MODEL_BIAS) + "truecase.mixedcasefile:"
+        return "truecase.model:" + properties.getProperty("truecase.model", DefaultPaths.DEFAULT_TRUECASE_MODEL)
+            + "truecase.bias:" + properties.getProperty("truecase.bias", TrueCaseAnnotator.DEFAULT_MODEL_BIAS)
+            + "truecase.mixedcasefile:"
             + properties.getProperty("truecase.mixedcasefile", DefaultPaths.DEFAULT_TRUECASE_DISAMBIGUATION_LIST);
       }
     });
@@ -667,7 +717,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
           String model = properties.getProperty("parse.model");
           String parserExecutable = properties.getProperty("parse.executable");
           if (model == null || parserExecutable == null) {
-            throw new RuntimeException("Both parse.model and parse.executable properties must be specified if parse.type=charniak");
+            throw new RuntimeException(
+                "Both parse.model and parse.executable properties must be specified if parse.type=charniak");
           }
           int maxLen = 399;
           if (maxLenStr != null) {
@@ -678,7 +729,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
           return anno;
         } else {
-          throw new RuntimeException("Unknown parser type: " + parserType + " (currently supported: stanford and charniak)");
+          throw new RuntimeException("Unknown parser type: " + parserType
+              + " (currently supported: stanford and charniak)");
         }
       }
 
@@ -689,8 +741,9 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
         if (type.equalsIgnoreCase("stanford")) {
           return ParserAnnotator.signature("parser", properties);
         } else if (type.equalsIgnoreCase("charniak")) {
-          return "parse.model:" + properties.getProperty("parse.model", "") + "parse.executable:" + properties.getProperty("parse.executable", "")
-              + "parse.maxlen:" + properties.getProperty("parse.maxlen", "");
+          return "parse.model:" + properties.getProperty("parse.model", "") + "parse.executable:"
+              + properties.getProperty("parse.executable", "") + "parse.maxlen:"
+              + properties.getProperty("parse.maxlen", "");
         } else {
           throw new RuntimeException("Unknown parser type: " + type + " (currently supported: stanford and charniak)");
         }
@@ -851,7 +904,8 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
       Annotator a = pool.get(name);
       return a;
     } catch (IllegalArgumentException e) {
-      System.err.println("ERROR: attempted to fetch annotator \"" + name + "\" but the annotator pool does not store any such type!");
+      System.err.println("ERROR: attempted to fetch annotator \"" + name
+          + "\" but the annotator pool does not store any such type!");
       return null;
     }
   }
@@ -903,9 +957,12 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
     os.println();
     os.println("\tIf annotator \"truecase\" is defined:");
-    os.println("\t\"truecase.model\" - path towards the true-casing model; default: " + DefaultPaths.DEFAULT_TRUECASE_MODEL);
-    os.println("\t\"truecase.bias\" - class bias of the true case model; default: " + TrueCaseAnnotator.DEFAULT_MODEL_BIAS);
-    os.println("\t\"truecase.mixedcasefile\" - path towards the mixed case file; default: " + DefaultPaths.DEFAULT_TRUECASE_DISAMBIGUATION_LIST);
+    os.println("\t\"truecase.model\" - path towards the true-casing model; default: "
+        + DefaultPaths.DEFAULT_TRUECASE_MODEL);
+    os.println("\t\"truecase.bias\" - class bias of the true case model; default: "
+        + TrueCaseAnnotator.DEFAULT_MODEL_BIAS);
+    os.println("\t\"truecase.mixedcasefile\" - path towards the mixed case file; default: "
+        + DefaultPaths.DEFAULT_TRUECASE_DISAMBIGUATION_LIST);
 
     os.println();
     os.println("\tIf annotator \"relation\" is defined:");
@@ -918,11 +975,15 @@ public class SzTECoreNLP extends SzTEAnnotationPipeline {
 
     /*
      * XXX: unstable, do not use for now os.println(); os.println("\tIf annotator \"srl\" is defined:");
-     * os.println("\t\"srl.verb.args\" - path to the file listing verbs and their core arguments (\"verbs.core_args\")");
-     * os.println("\t\"srl.model.id\" - path prefix for the role identification model (adds \".model.gz\" and \".fe\" to this prefix)");
-     * os.println("\t\"srl.model.cls\" - path prefix for the role classification model (adds \".model.gz\" and \".fe\" to this prefix)");
-     * os.println("\t\"srl.model.jic\" - path to the directory containing the joint model's \"model.gz\", \"fe\" and \"je\" files");
-     * os.println("\t                  (if not specified, the joint model will not be used)");
+     * os.println
+     * ("\t\"srl.verb.args\" - path to the file listing verbs and their core arguments (\"verbs.core_args\")"
+     * ); os.println(
+     * "\t\"srl.model.id\" - path prefix for the role identification model (adds \".model.gz\" and \".fe\" to this prefix)"
+     * ); os.println(
+     * "\t\"srl.model.cls\" - path prefix for the role classification model (adds \".model.gz\" and \".fe\" to this prefix)"
+     * ); os.println(
+     * "\t\"srl.model.jic\" - path to the directory containing the joint model's \"model.gz\", \"fe\" and \"je\" files"
+     * ); os.println("\t                  (if not specified, the joint model will not be used)");
      */
 
     os.println();

@@ -19,7 +19,7 @@
     	<pathelement location="lib/stanford-corenlp-full-2014-06-16/jollyday.jar"/>
     	<pathelement location="lib/stanford-corenlp-full-2014-06-16/stanford-corenlp-3.4-models.jar"/>
     	<pathelement location="lib/stanford-corenlp-full-2014-06-16/stanford-corenlp-3.4.jar"/>
-    	<pathelement location="lib/stanford-corenlp-full-2014-06-04/xom.jar"/>
+    	<pathelement location="lib/stanford-corenlp-full-2014-06-16/xom.jar"/>
     	<pathelement location="lib/mallet-deps.jar"/>
     	<pathelement location="lib/mallet.jar"/>
     </path>

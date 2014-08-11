@@ -135,6 +135,10 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
     return lineNumInFile;
   }
 
+  public void setLineNumInFile(int lineNum) {
+    lineNumInFile = lineNum;
+  }
+
   public String toString() {
     return documentId + "\t" + file;
   }
@@ -191,8 +195,8 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
   }
 
   /**
-   * Checks for the presence of some critical annotations. In the case some of those entered among the parameters is missing, the texts needs to be
-   * re-annotated.
+   * Checks for the presence of some critical annotations. In the case some of those entered among the
+   * parameters is missing, the texts needs to be re-annotated.
    * 
    * @param a
    *          annotation
@@ -208,7 +212,8 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
     }
     Set<Class<?>> sentenceAnnotations = sentences.get(0).keySet();
     Set<Class<?>> tokenAnnotations = tokens.get(0).keySet();
-    if ((r.getIsMweOn() && !tokenAnnotations.contains(MWEAnnotation.class)) || (r.getIsNeOn() && !tokenAnnotations.contains(NamedEntityTagAnnotation.class))) {
+    if ((r.getIsMweOn() && !tokenAnnotations.contains(MWEAnnotation.class))
+        || (r.getIsNeOn() && !tokenAnnotations.contains(NamedEntityTagAnnotation.class))) {
       return true;
     }
     if (r.getIsSyntaxOn() && !sentenceAnnotations.contains(TreeAnnotation.class)) {
@@ -243,7 +248,8 @@ public class DocumentData implements Comparable<DocumentData>, Serializable {
     try {
       System.err.println(file + " is to be analysed...");
       for (String section : paragraphs) {
-        // just some ugly hack to get over such expressions as inequalities that would affect the tokenizer to make dull things
+        // just some ugly hack to get over such expressions as inequalities that would affect the tokenizer to
+        // make dull things
         if (isScientific()) {
           int originalLength = section.length();
           section = section.replaceAll("<([\\S&&[^>]]+) +", "< $1 "); // replaceAll("([<>])(\\S+)", "$1 $2");

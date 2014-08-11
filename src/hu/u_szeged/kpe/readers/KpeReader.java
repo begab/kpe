@@ -11,7 +11,10 @@ public abstract class KpeReader {
 
   public static SzTECoreNLP sentenceAnalyzer;
 
-  /** On default (unless overridden by a descendant class) we shall only treat files having this kind of extension */
+  /**
+   * On default (unless overridden by a descendant class) we shall only treat files having this kind of
+   * extension
+   */
   protected static final String DEFAULT_EXTENSION = ".txt";
   protected String fileType;
   protected Charset m_encoding;
@@ -22,8 +25,10 @@ public abstract class KpeReader {
   protected boolean goldAnnotation;
 
   /**
-   * This method returns a {@link}List of DocumentData class representations of documents being present at location dir+"/"+file <br>
-   * It returns a list of {@link} DocumentData objects as one document might contain more than just one document (e.g in the form of an XML). <br>
+   * This method returns a {@link}List of DocumentData class representations of documents being present at
+   * location dir+"/"+file <br>
+   * It returns a list of {@link} DocumentData objects as one document might contain more than just one
+   * document (e.g in the form of an XML). <br>
    * Most often however, this List is going to be just of size 1.
    * 
    * @param dir
@@ -77,6 +82,9 @@ public abstract class KpeReader {
       annotators += isSyntacticFeatureOn && lang.equals("en") ? ", parse" : "";
 
       Properties props = new Properties();
+      if (this instanceof EpinionReader) {
+        annotators = annotators.replace("tokenize,", "tokenize, cleanxml,");
+      }
       props.put("annotators", annotators);
       // TODO this is clearly not necessary in all the cases
       // this should be used only when it is desired for new lines to act as sentence boundaries

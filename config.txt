@@ -1,10 +1,12 @@
 train=SemEvalReader->/home/berend/datasets/semeval5/train/ // this line defines which reader (the class SemEvalReader) shall process the training data located at the path followed after '->'.
 test=SemEvalReader->/home/berend/datasets/semeval5/test/ // defines the same as the previous line, but for the test data
 classifier=MaxEntL1 // the name of the Mallet classifier to be employed
-featureEncoding=1038 // this value encodes the following set of features: {Tf-idf, Suffix, StrangeOrthography, Pos}
+featureEncoding=4122 // this value encodes the following set of features: {Tf-idf, Suffix, StrangeOrthography, Pos}
 numOfKeyphrases=25 // the number of keyphrases to return per document
 wordnet_dir=false // in the case you wish WordNet (WN) to be used during keyphrase extraction, you can define the location of your WordNet dict directory here, such as /home/berend/WordNet3.0/dict
 posEndPrune=true // experimental feature for ruling out certain keyphrase candidates based on POS tag-based rules
 stopWordPrune=true // experimental feature for ruling out certain keyphrase candidates based on stopwords
 beisMarkup=true,false,true // these values mark for which sequential features (out of POS, named entities and char suffixes-related ones) to use the B/E/I/S (i.e. B=begining, E=ending, I=inside, S=singleton) prefixes involving token positional information in the features
 serializeAnnotations=false // indicates if grammatical analysis should be backed up for subsequent runs
+numOfFolds=5
+language=en //hu is also available

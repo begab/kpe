@@ -32,8 +32,8 @@ import edu.stanford.nlp.pipeline.NormalizerAnnotator.NormalizerAnnotation;
 import edu.stanford.nlp.pipeline.StopWordAnnotator.StopWordAnnotation;
 
 /**
- * An extension of CoreLabel containing ArrayList, that stores words in a lexicographical ordering (based on CoreLabelComparator), after removing
- * stopword components from the representation.
+ * An extension of CoreLabel containing ArrayList, that stores words in a lexicographical ordering (based on
+ * CoreLabelComparator), after removing stopword components from the representation.
  */
 
 public class NGram extends ArrayList<CoreLabel> implements Cloneable {
@@ -152,7 +152,7 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     return false;
   }
 
-  private String getTransformedForm(CoreLabel cl) {
+  private static String getTransformedForm(CoreLabel cl) {
     String pos = cl.getString(PartOfSpeechAnnotation.class).toLowerCase();
     Set<SynsetType> synsetTypes = new HashSet<SynsetType>(Arrays.asList(SynsetType.ALL_TYPES));
     if (pos.startsWith("nn")) {
@@ -160,7 +160,8 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
     } else if (pos.startsWith("vb")) {
       synsetTypes = new HashSet<SynsetType>(Arrays.asList(new SynsetType[] { SynsetType.VERB }));
     } else if (pos.startsWith("jj")) {
-      synsetTypes = new HashSet<SynsetType>(Arrays.asList(new SynsetType[] { SynsetType.ADJECTIVE, SynsetType.ADJECTIVE_SATELLITE }));
+      synsetTypes = new HashSet<SynsetType>(Arrays.asList(new SynsetType[] { SynsetType.ADJECTIVE,
+          SynsetType.ADJECTIVE_SATELLITE }));
     }
 
     Map<String, Integer> aggrFreqs = new HashMap<String, Integer>();
@@ -172,7 +173,8 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
       if (!synsetTypes.contains(actualType)) {
         continue;
       }
-      WordSense[] wss = actualType == SynsetType.VERB ? synset.getDerivationallyRelatedForms(lemma) : new WordSense[] { new WordSense(lemma, synset) };
+      WordSense[] wss = actualType == SynsetType.VERB ? synset.getDerivationallyRelatedForms(lemma)
+          : new WordSense[] { new WordSense(lemma, synset) };
       for (WordSense w : wss) {
         Synset s = w.getSynset();
         if (pos.startsWith("vb") && s.getType() != SynsetType.NOUN) {
@@ -206,10 +208,11 @@ public class NGram extends ArrayList<CoreLabel> implements Cloneable {
    * 
    * @param cl
    *          - the CoreLabel to determine the normalized form of
-   * @return - the normalized representation of the CoreLabel parameter (or null if the word is known to be a stopword)
+   * @return - the normalized representation of the CoreLabel parameter (or null if the word is known to be a
+   *         stopword)
    */
 
-  private String getNormalizedCoreLabel(CoreLabel cl) {
+  public static String getNormalizedCoreLabel(CoreLabel cl) {
     boolean isStopWord = cl.has(StopWordAnnotation.class) && cl.get(StopWordAnnotation.class);
     String normalization = ps.stem(cl.lemma().toLowerCase());
 
