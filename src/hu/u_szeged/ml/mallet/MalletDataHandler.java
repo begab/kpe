@@ -414,8 +414,6 @@ public class MalletDataHandler extends DataHandler implements Serializable {
   public void saveDataset(String target) {
     if (!target.contains("|") || target.split("\\|")[1].equals("mallet")) {
       saveDatasetMallet(target.split("\\|")[0]);
-    } else if (target.split("\\|")[1].equals("svm")) {
-      saveDatasetSVM(target.split("\\|")[0]);
     } else if (target.split("\\|")[1].equals("weka")) {
       saveDatasetWeka(target.split("\\|")[0]);
     } else {
@@ -431,23 +429,6 @@ public class MalletDataHandler extends DataHandler implements Serializable {
         AugmentableFeatureVector fv = getInstanceData(id);
         for (int i = 0; i < fv.numLocations(); ++i) {
           out.print("\t" + featureAlphabet.getAlphabet().lookupObject(fv.getIndices()[i]) + ":" + fv.getValues()[i]);
-        }
-        out.println();
-      }
-      out.close();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void saveDatasetSVM(String target) {
-    try {
-      PrintWriter out = new PrintWriter(target);
-      for (String id : instanceIds.keySet()) {
-        out.print(getLabel(id) ? "1" : "-1");
-        AugmentableFeatureVector fv = getInstanceData(id);
-        for (int i = 0; i < fv.numLocations(); ++i) {
-          out.print(" " + (fv.getIndices()[i] + 1) + ":" + fv.getValues()[i]);
         }
         out.println();
       }
@@ -479,7 +460,7 @@ public class MalletDataHandler extends DataHandler implements Serializable {
           }
           out.print((fv.getIndices()[i]) + " " + fv.getValues()[i]);
         }
-        if (getLabel(id)) {
+        if ((boolean) getLabel(id)) {
           out.print("," + data.getAlphabet().size() + " 1");
         }
         out.println("}");
